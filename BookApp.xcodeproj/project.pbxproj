@@ -14,9 +14,33 @@
 		0199F20F2DFB15750083EDEE /* BookApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BookApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		01F43F8C2DFC1E160001279E /* Exceptions for "BookApp" folder in "BookApp" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Secrets/Secrets.plist,
+			);
+			target = 0199F20E2DFB15740083EDEE /* BookApp */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+		01F43F8D2DFC1E160001279E /* Exceptions for "BookApp" folder in "Compile Sources" phase from "BookApp" target */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = 0199F20B2DFB15740083EDEE /* Sources */;
+			membershipExceptions = (
+				Secrets/Secrets.plist,
+			);
+		};
+/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		0199F2112DFB15750083EDEE /* BookApp */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				01F43F8C2DFC1E160001279E /* Exceptions for "BookApp" folder in "BookApp" target */,
+				01F43F8D2DFC1E160001279E /* Exceptions for "BookApp" folder in "Compile Sources" phase from "BookApp" target */,
+			);
 			path = BookApp;
 			sourceTree = "<group>";
 		};
