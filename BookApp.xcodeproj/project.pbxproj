@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		015EC5092DFB19870029F87C /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 015EC5082DFB19870029F87C /* ComposableArchitecture */; };
+		01F43F932DFC236C0001279E /* NetworkClient in Frameworks */ = {isa = PBXBuildFile; productRef = 01F43F922DFC236C0001279E /* NetworkClient */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -51,6 +52,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				01F43F932DFC236C0001279E /* NetworkClient in Frameworks */,
 				015EC5092DFB19870029F87C /* ComposableArchitecture in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -95,6 +97,7 @@
 			name = BookApp;
 			packageProductDependencies = (
 				015EC5082DFB19870029F87C /* ComposableArchitecture */,
+				01F43F922DFC236C0001279E /* NetworkClient */,
 			);
 			productName = BookApp;
 			productReference = 0199F20F2DFB15750083EDEE /* BookApp.app */;
@@ -126,6 +129,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				015EC5072DFB19870029F87C /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
+				01F43F912DFC236C0001279E /* XCLocalSwiftPackageReference "NetworkClient" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 0199F2102DFB15750083EDEE /* Products */;
@@ -375,6 +379,13 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		01F43F912DFC236C0001279E /* XCLocalSwiftPackageReference "NetworkClient" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = NetworkClient;
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCRemoteSwiftPackageReference section */
 		015EC5072DFB19870029F87C /* XCRemoteSwiftPackageReference "swift-composable-architecture" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -391,6 +402,10 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 015EC5072DFB19870029F87C /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
 			productName = ComposableArchitecture;
+		};
+		01F43F922DFC236C0001279E /* NetworkClient */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = NetworkClient;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
