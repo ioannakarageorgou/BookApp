@@ -23,7 +23,7 @@ struct LiveNetworkClient: NetworkClient {
         do {
             return try JSONDecoder().decode(T.Response.self, from: data)
         } catch {
-            throw NetworkError.decodingError(error)
+            throw NetworkError.decodingError
         }
     }
 }

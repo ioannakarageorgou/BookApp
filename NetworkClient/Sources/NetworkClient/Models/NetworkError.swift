@@ -1,6 +1,6 @@
-public enum NetworkError: Error {
+public enum NetworkError: Error, Equatable {
     case invalidURL
-    case decodingError(Error)
+    case decodingError
     case httpError(Int)
-    case unknown(Error)
+    case unknown
 }

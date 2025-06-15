@@ -4,11 +4,15 @@ import Foundation
 /// Validates HTTP response status code (must be 2xx).
 /// Returns raw Data or throws NetworkError on failure.
 struct NetworkDispatcher {
-    public init() {}
+    private let session: URLSession
+
+    public init(session: URLSession = .shared) {
+        self.session = session
+    }
 
     public func send(_ request: URLRequest) async throws -> Data {
         do {
-            let (data, response) = try await URLSession.shared.data(for: request)
+            let (data, response) = try await session.data(for: request)
 
             guard let httpResponse = response as? HTTPURLResponse else {
                 throw NetworkError.httpError(-1)
@@ -19,8 +23,10 @@ struct NetworkDispatcher {
             }
 
             return data
+        } catch let error as NetworkError {
+            throw error
         } catch {
-            throw NetworkError.unknown(error)
+            throw NetworkError.unknown
         }
     }
 }
