@@ -4,9 +4,7 @@ import ComposableArchitecture
 @Reducer
 struct BookList {
     struct State: Equatable {
-        var books: [Book] = []
-        var isLoading: Bool = false
-        var errorMessage: String?
+        var books: Loading<[Book]> = .idle
     }
 
     enum Action {
@@ -19,8 +17,7 @@ struct BookList {
     func reduce(into state: inout State, action: Action) -> Effect<Action> {
         switch action {
         case .onAppear:
-            state.isLoading = true
-            state.errorMessage = nil
+            state.books = .loading
             return .run { send in
                 do {
                     let books = try await booksRepository.fetchBooks(query: "harry potter")
@@ -31,14 +28,11 @@ struct BookList {
             }
 
         case let .booksResponse(.success(books)):
-            state.isLoading = false
-            state.books = books
+            state.books = .loaded(books)
             return .none
 
-        case .booksResponse(.failure):
-            state.isLoading = false
-            state.errorMessage = "opps, error"
-            state.books = []
+        case let .booksResponse(.failure(error)):
+            state.books = .error("Oops, something went wrong: \(error.localizedDescription)")
             return .none
         }
     }
