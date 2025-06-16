@@ -11,7 +11,18 @@
 		01F43F932DFC236C0001279E /* NetworkClient in Frameworks */ = {isa = PBXBuildFile; productRef = 01F43F922DFC236C0001279E /* NetworkClient */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		0186B6A12DFEF8C80024C08D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0199F2072DFB15740083EDEE /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0199F20E2DFB15740083EDEE;
+			remoteInfo = BookApp;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		0186B6A02DFEF8C80024C08D /* BookAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BookAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0199F20F2DFB15750083EDEE /* BookApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BookApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -45,9 +56,21 @@
 			path = BookApp;
 			sourceTree = "<group>";
 		};
+		019EBDE22DFEFBC60023EE4E /* BookAppTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = BookAppTests;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		0186B69D2DFEF8C80024C08D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		0199F20C2DFB15740083EDEE /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -63,6 +86,7 @@
 		0199F2062DFB15740083EDEE = {
 			isa = PBXGroup;
 			children = (
+				019EBDE22DFEFBC60023EE4E /* BookAppTests */,
 				0199F2112DFB15750083EDEE /* BookApp */,
 				0199F2102DFB15750083EDEE /* Products */,
 			);
@@ -72,6 +96,7 @@
 			isa = PBXGroup;
 			children = (
 				0199F20F2DFB15750083EDEE /* BookApp.app */,
+				0186B6A02DFEF8C80024C08D /* BookAppTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -79,6 +104,29 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		0186B69F2DFEF8C80024C08D /* BookAppTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0186B6A52DFEF8C80024C08D /* Build configuration list for PBXNativeTarget "BookAppTests" */;
+			buildPhases = (
+				0186B69C2DFEF8C80024C08D /* Sources */,
+				0186B69D2DFEF8C80024C08D /* Frameworks */,
+				0186B69E2DFEF8C80024C08D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				0186B6A22DFEF8C80024C08D /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				019EBDE22DFEFBC60023EE4E /* BookAppTests */,
+			);
+			name = BookAppTests;
+			packageProductDependencies = (
+			);
+			productName = BookAppTests;
+			productReference = 0186B6A02DFEF8C80024C08D /* BookAppTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		0199F20E2DFB15740083EDEE /* BookApp */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 0199F21B2DFB15760083EDEE /* Build configuration list for PBXNativeTarget "BookApp" */;
@@ -113,6 +161,11 @@
 				LastSwiftUpdateCheck = 1640;
 				LastUpgradeCheck = 1640;
 				TargetAttributes = {
+					0186B69F2DFEF8C80024C08D = {
+						CreatedOnToolsVersion = 16.4;
+						LastSwiftMigration = 1640;
+						TestTargetID = 0199F20E2DFB15740083EDEE;
+					};
 					0199F20E2DFB15740083EDEE = {
 						CreatedOnToolsVersion = 16.4;
 					};
@@ -137,11 +190,19 @@
 			projectRoot = "";
 			targets = (
 				0199F20E2DFB15740083EDEE /* BookApp */,
+				0186B69F2DFEF8C80024C08D /* BookAppTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		0186B69E2DFEF8C80024C08D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		0199F20D2DFB15740083EDEE /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -152,6 +213,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		0186B69C2DFEF8C80024C08D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		0199F20B2DFB15740083EDEE /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -161,7 +229,63 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		0186B6A22DFEF8C80024C08D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 0199F20E2DFB15740083EDEE /* BookApp */;
+			targetProxy = 0186B6A12DFEF8C80024C08D /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		0186B6A32DFEF8C80024C08D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 246MY596A2;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.side.project.BookAppTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = xros;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BookApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/BookApp";
+				XROS_DEPLOYMENT_TARGET = 2.5;
+			};
+			name = Debug;
+		};
+		0186B6A42DFEF8C80024C08D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 246MY596A2;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.side.project.BookAppTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = xros;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BookApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/BookApp";
+				VALIDATE_PRODUCT = YES;
+				XROS_DEPLOYMENT_TARGET = 2.5;
+			};
+			name = Release;
+		};
 		0199F2192DFB15760083EDEE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -309,10 +433,11 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TARGETED_DEVICE_FAMILY = "1,2";
 				XROS_DEPLOYMENT_TARGET = 2.5;
 			};
 			name = Debug;
@@ -348,10 +473,11 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TARGETED_DEVICE_FAMILY = "1,2";
 				XROS_DEPLOYMENT_TARGET = 2.5;
 			};
 			name = Release;
@@ -359,6 +485,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		0186B6A52DFEF8C80024C08D /* Build configuration list for PBXNativeTarget "BookAppTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0186B6A32DFEF8C80024C08D /* Debug */,
+				0186B6A42DFEF8C80024C08D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		0199F20A2DFB15740083EDEE /* Build configuration list for PBXProject "BookApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
