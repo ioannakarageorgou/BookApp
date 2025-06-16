@@ -1,11 +1,11 @@
-public enum Loading<Value: Equatable>: Equatable {
+enum Loading<Value: Equatable>: Equatable {
     case idle
     case loading
     case loaded(Value)
     case error(String)
 }
 
-public extension Loading {
+extension Loading {
     var value: Value? {
         if case let .loaded(value) = self { return value }
         return nil

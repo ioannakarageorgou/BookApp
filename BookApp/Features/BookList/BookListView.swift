@@ -9,23 +9,17 @@ struct BookListView: View {
             Group {
                 switch viewStore.books {
                 case .idle, .loading:
-                    loadingView()
+                    LoadingView(message: "Loading books...")
 
                 case .error(let message):
                     errorView(with: message)
 
                 case .loaded(let books):
-                    loadedView(with: books)
+//                    loadedView(with: books)
                 }
             }
         }
         .onAppear { store.send(.onAppear) }
-    }
-
-    private func loadingView() -> some SwiftUI.View {
-        ProgressView("Loading books...")
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color(.systemGroupedBackground))
     }
 
     private func errorView(with message: String) -> some SwiftUI.View {
