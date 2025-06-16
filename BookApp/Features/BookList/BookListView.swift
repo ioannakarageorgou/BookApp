@@ -12,26 +12,15 @@ struct BookListView: View {
                     LoadingView(message: "Loading books...")
 
                 case .error(let message):
-                    errorView(with: message)
+                    ErrorView(message: message) { store.send(.fetchBooks) }
 
                 case .loaded(let books):
+                    ErrorView() { store.send(.fetchBooks) }
 //                    loadedView(with: books)
                 }
             }
         }
-        .onAppear { store.send(.onAppear) }
-    }
-
-    private func errorView(with message: String) -> some SwiftUI.View {
-        VStack(spacing: 12) {
-            Text("😕")
-                .font(.system(size: 40))
-            Text(message)
-                .multilineTextAlignment(.center)
-                .foregroundColor(.secondary)
-        }
-        .padding()
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .onAppear { store.send(.fetchBooks) }
     }
 
     private func loadedView(with books: [Book]) -> some SwiftUI.View {

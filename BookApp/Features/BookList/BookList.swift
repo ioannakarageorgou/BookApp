@@ -8,7 +8,7 @@ struct BookList {
     }
 
     enum Action {
-        case onAppear
+        case fetchBooks
         case booksResponse(Result<[Book], Error>)
     }
 
@@ -16,7 +16,7 @@ struct BookList {
 
     func reduce(into state: inout State, action: Action) -> Effect<Action> {
         switch action {
-        case .onAppear:
+        case .fetchBooks:
             state.books = .loading
             return .run { send in
                 do {
