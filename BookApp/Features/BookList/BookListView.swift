@@ -14,9 +14,20 @@ struct BookListView: View {
                 case .error(let message):
                     ErrorView(message: message) { store.send(.fetchBooks) }
 
+                case .loaded(let books) where books.isEmpty:
+                    EmptyPlaceholderView(
+                        title: "No books found",
+                        message: "Try a different search query or check back later.",
+                        icon: "book"
+                    )
+
                 case .loaded(let books):
-                    ErrorView() { store.send(.fetchBooks) }
-//                    loadedView(with: books)
+                    EmptyPlaceholderView(
+                        title: "No books found",
+                        message: "Try a different search query or check back later.",
+                        icon: "book"
+                    )
+                    //                    loadedView(with: books)
                 }
             }
         }
@@ -24,14 +35,14 @@ struct BookListView: View {
     }
 
     private func loadedView(with books: [Book]) -> some SwiftUI.View {
-//        if books.isEmpty {
-//            Text("No books found.")
-//                .foregroundColor(.secondary)
-//                .frame(maxWidth: .infinity, maxHeight: .infinity)
-//        } else {
-            List(books) { book in
-                Text(book.title)
-            }
-//        }
+        //        if books.isEmpty {
+        //            Text("No books found.")
+        //                .foregroundColor(.secondary)
+        //                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        //        } else {
+        List(books) { book in
+            Text(book.title)
+        }
+        //        }
     }
 }
