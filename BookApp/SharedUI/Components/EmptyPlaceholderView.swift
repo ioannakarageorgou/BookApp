@@ -1,11 +1,11 @@
 import SwiftUI
 
-public struct EmptyPlaceholderView: View {
-    public let title: String
-    public let message: String?
-    public let icon: String
+struct EmptyPlaceholderView: View {
+    let title: String
+    let message: String?
+    let icon: String
 
-    public init(
+    init(
         title: String,
         message: String? = nil,
         icon: String = "book"
@@ -15,7 +15,7 @@ public struct EmptyPlaceholderView: View {
         self.icon = icon
     }
 
-    public var body: some View {
+    var body: some View {
         VStack(spacing: 12) {
             Image(systemName: icon)
                 .font(.system(size: 40, weight: .semibold))
@@ -37,4 +37,12 @@ public struct EmptyPlaceholderView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color(.systemGroupedBackground))
     }
+}
+
+#Preview {
+    EmptyPlaceholderView(
+        title: "No entries found",
+        message: "Try a different search query or check back later.",
+        icon: "book"
+    )
 }

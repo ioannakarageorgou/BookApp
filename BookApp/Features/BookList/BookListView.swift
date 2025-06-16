@@ -22,12 +22,7 @@ struct BookListView: View {
                     )
 
                 case .loaded(let books):
-                    EmptyPlaceholderView(
-                        title: "No books found",
-                        message: "Try a different search query or check back later.",
-                        icon: "book"
-                    )
-                    //                    loadedView(with: books)
+                                        loadedView(with: books)
                 }
             }
         }

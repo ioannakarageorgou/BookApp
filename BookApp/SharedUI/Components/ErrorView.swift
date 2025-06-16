@@ -1,10 +1,10 @@
 import SwiftUI
 
-public struct ErrorView: View {
-    private let message: String
-    private let onRetry: (() -> Void)?
+struct ErrorView: View {
+    let message: String
+    let onRetry: (() -> Void)?
 
-    public init(
+    init(
         message: String = "Something went wrong. Please try again later.",
         onRetry: (() -> Void)? = nil
     ) {
@@ -12,7 +12,7 @@ public struct ErrorView: View {
         self.onRetry = onRetry
     }
 
-    public var body: some View {
+    var body: some View {
         VStack(spacing: 16) {
             Text("😕")
                 .font(.system(size: 48))
@@ -40,4 +40,8 @@ public struct ErrorView: View {
         .background(Color(.systemGroupedBackground).ignoresSafeArea())
         .animation(.default, value: onRetry != nil)
     }
+}
+
+#Preview {
+    ErrorView(onRetry: {})
 }
