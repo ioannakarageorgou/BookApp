@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		015EC5092DFB19870029F87C /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 015EC5082DFB19870029F87C /* ComposableArchitecture */; };
+		019AEB0A2E000A5700AE732F /* BookAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 019AEB092E000A5700AE732F /* BookAPIClient */; };
 		01F43F932DFC236C0001279E /* NetworkClient in Frameworks */ = {isa = PBXBuildFile; productRef = 01F43F922DFC236C0001279E /* NetworkClient */; };
 /* End PBXBuildFile section */
 
@@ -76,6 +77,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				01F43F932DFC236C0001279E /* NetworkClient in Frameworks */,
+				019AEB0A2E000A5700AE732F /* BookAPIClient in Frameworks */,
 				015EC5092DFB19870029F87C /* ComposableArchitecture in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -146,6 +148,7 @@
 			packageProductDependencies = (
 				015EC5082DFB19870029F87C /* ComposableArchitecture */,
 				01F43F922DFC236C0001279E /* NetworkClient */,
+				019AEB092E000A5700AE732F /* BookAPIClient */,
 			);
 			productName = BookApp;
 			productReference = 0199F20F2DFB15750083EDEE /* BookApp.app */;
@@ -183,6 +186,7 @@
 			packageReferences = (
 				015EC5072DFB19870029F87C /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
 				01F43F912DFC236C0001279E /* XCLocalSwiftPackageReference "NetworkClient" */,
+				019AEB082E000A5700AE732F /* XCLocalSwiftPackageReference "BookAPIClient" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 0199F2102DFB15750083EDEE /* Products */;
@@ -515,6 +519,10 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
+		019AEB082E000A5700AE732F /* XCLocalSwiftPackageReference "BookAPIClient" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = BookAPIClient;
+		};
 		01F43F912DFC236C0001279E /* XCLocalSwiftPackageReference "NetworkClient" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = NetworkClient;
@@ -537,6 +545,10 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 015EC5072DFB19870029F87C /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
 			productName = ComposableArchitecture;
+		};
+		019AEB092E000A5700AE732F /* BookAPIClient */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = BookAPIClient;
 		};
 		01F43F922DFC236C0001279E /* NetworkClient */ = {
 			isa = XCSwiftPackageProductDependency;

@@ -1,5 +1,6 @@
 import Foundation
 import NetworkClient
+import BookAPIClient
 
 public protocol BooksRepositoryProviding {
     func fetchBooks(query: String) async throws -> [Book]
