@@ -22,22 +22,10 @@ struct BookListView: View {
                     )
 
                 case .loaded(let books):
-                                        loadedView(with: books)
+                    LoadedBooksView(books: books)
                 }
             }
         }
         .onAppear { store.send(.fetchBooks) }
-    }
-
-    private func loadedView(with books: [Book]) -> some SwiftUI.View {
-        //        if books.isEmpty {
-        //            Text("No books found.")
-        //                .foregroundColor(.secondary)
-        //                .frame(maxWidth: .infinity, maxHeight: .infinity)
-        //        } else {
-        List(books) { book in
-            Text(book.title)
-        }
-        //        }
     }
 }
