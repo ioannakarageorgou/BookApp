@@ -22,6 +22,7 @@ public struct RowView: View {
                     switch phase {
                     case .empty:
                         ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: Theme.accent))
                             .frame(width: 50, height: 75)
                     case .success(let image):
                         image
@@ -43,12 +44,13 @@ public struct RowView: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
                     .font(.headline)
+                    .foregroundColor(Theme.textPrimary)
                     .lineLimit(2)
 
                 if let subtitle {
                     Text(subtitle)
                         .font(.subheadline)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(Theme.textSecondary)
                         .lineLimit(1)
                 }
             }
@@ -57,6 +59,8 @@ public struct RowView: View {
         }
         .padding(.vertical, 8)
         .padding(.horizontal, 16)
+        .background(Theme.backgroundSecondary)
+        .clipShape(RoundedRectangle(cornerRadius: 10))
     }
 
     @ViewBuilder
@@ -65,7 +69,8 @@ public struct RowView: View {
             .resizable()
             .scaledToFit()
             .frame(width: 50, height: 75)
-            .foregroundColor(.gray.opacity(0.5))
+            .foregroundColor(Theme.accent.opacity(0.3))
+            .background(Theme.backgroundSecondary)
             .cornerRadius(6)
     }
 }

@@ -11,6 +11,7 @@ struct LoadedBooksView: View {
                 Text("Books")
                     .font(.title2)
                     .bold()
+                    .foregroundColor(Theme.textPrimary)
                     .padding(.horizontal)
 
                 LazyVStack(spacing: 8) {
@@ -26,6 +27,7 @@ struct LoadedBooksView: View {
             .padding(.vertical)
             .frame(maxWidth: .infinity, alignment: .leading)
         }
+        .background(Theme.background.ignoresSafeArea())
     }
 }
 

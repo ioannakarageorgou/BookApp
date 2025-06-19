@@ -20,7 +20,7 @@ public struct ErrorView: View {
             Text(message)
                 .font(.headline)
                 .multilineTextAlignment(.center)
-                .foregroundColor(.secondary)
+                .foregroundColor(Theme.textSecondary)
 
             if let onRetry = onRetry {
                 Button(action: onRetry) {
@@ -28,8 +28,8 @@ public struct ErrorView: View {
                         .font(.subheadline)
                         .padding(.horizontal, 24)
                         .padding(.vertical, 10)
-                        .background(Color.accentColor)
-                        .foregroundColor(.white)
+                        .background(Theme.accent)
+                        .foregroundColor(Theme.textOnAccent)
                         .clipShape(Capsule())
                 }
                 .transition(.opacity)
@@ -37,7 +37,7 @@ public struct ErrorView: View {
         }
         .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color(.systemGroupedBackground).ignoresSafeArea())
+        .background(Theme.background.ignoresSafeArea())
         .animation(.default, value: onRetry != nil)
     }
 }

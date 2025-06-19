@@ -19,23 +19,24 @@ public struct EmptyPlaceholderView: View {
         VStack(spacing: 12) {
             Image(systemName: icon)
                 .font(.system(size: 40, weight: .semibold))
-                .foregroundColor(.accentColor)
+                .foregroundColor(Theme.accent)
 
             Text(title)
                 .font(.title3)
                 .fontWeight(.semibold)
+                .foregroundColor(Theme.textPrimary)
 
             if let message {
                 Text(message)
                     .font(.subheadline)
                     .multilineTextAlignment(.center)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(Theme.textSecondary)
                     .padding(.horizontal)
             }
         }
         .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color(.systemGroupedBackground))
+        .background(Theme.background.ignoresSafeArea())
     }
 }
 
