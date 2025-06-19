@@ -8,10 +8,10 @@ public struct LoadingView: View {
     }
 
     public var body: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: AppLayout.Spacing.medium) {
             ProgressView()
                 .progressViewStyle(CircularProgressViewStyle())
-                .scaleEffect(1.2)
+                .scaleEffect(AppLayout.Scale.progressView)
                 .tint(Theme.accent)
 
             Text(message)

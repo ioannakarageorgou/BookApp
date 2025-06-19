@@ -7,14 +7,14 @@ struct LoadedBooksView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
+            VStack(alignment: .leading, spacing: AppLayout.Spacing.medium) {
                 Text("Books")
                     .font(.title2)
                     .bold()
                     .foregroundColor(Theme.textPrimary)
                     .padding(.horizontal)
 
-                LazyVStack(spacing: 8) {
+                LazyVStack(spacing: AppLayout.Spacing.small) {
                     ForEach(books) { book in
                         RowView(
                             title: book.title,

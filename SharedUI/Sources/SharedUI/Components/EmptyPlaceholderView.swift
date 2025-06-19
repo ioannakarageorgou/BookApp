@@ -16,7 +16,7 @@ public struct EmptyPlaceholderView: View {
     }
 
     public var body: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: AppLayout.Spacing.medium) {
             Image(systemName: icon)
                 .font(.system(size: 40, weight: .semibold))
                 .foregroundColor(Theme.accent)

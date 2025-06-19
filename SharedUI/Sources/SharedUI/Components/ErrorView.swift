@@ -13,7 +13,7 @@ public struct ErrorView: View {
     }
 
     public var body: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: AppLayout.Spacing.medium) {
             Text("😕")
                 .font(.system(size: 48))
 
@@ -26,8 +26,8 @@ public struct ErrorView: View {
                 Button(action: onRetry) {
                     Text("Retry")
                         .font(.subheadline)
-                        .padding(.horizontal, 24)
-                        .padding(.vertical, 10)
+                        .padding(.horizontal, AppLayout.Spacing.large)
+                        .padding(.vertical, AppLayout.Spacing.small)
                         .background(Theme.accent)
                         .foregroundColor(Theme.textOnAccent)
                         .clipShape(Capsule())

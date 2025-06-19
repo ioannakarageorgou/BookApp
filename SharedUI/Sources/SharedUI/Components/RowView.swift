@@ -16,21 +16,21 @@ public struct RowView: View {
     }
 
     public var body: some View {
-        HStack(alignment: .top, spacing: 12) {
+        HStack(alignment: .top, spacing: AppLayout.Spacing.medium) {
             if let url = thumbnailURL {
                 AsyncImage(url: url) { phase in
                     switch phase {
                     case .empty:
                         ProgressView()
                             .progressViewStyle(CircularProgressViewStyle(tint: Theme.accent))
-                            .frame(width: 50, height: 75)
+                            .frame(width: AppLayout.ImageSize.width, height: AppLayout.ImageSize.height)
                     case .success(let image):
                         image
                             .resizable()
                             .scaledToFill()
-                            .frame(width: 50, height: 75)
+                            .frame(width: AppLayout.ImageSize.width, height: AppLayout.ImageSize.height)
                             .clipped()
-                            .cornerRadius(6)
+                            .cornerRadius(AppLayout.CornerRadius.small)
                     case .failure(_):
                         placeholderImage
                     @unknown default:
@@ -41,7 +41,7 @@ public struct RowView: View {
                 placeholderImage
             }
 
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: AppLayout.Spacing.tiny) {
                 Text(title)
                     .font(.headline)
                     .foregroundColor(Theme.textPrimary)
@@ -57,10 +57,10 @@ public struct RowView: View {
 
             Spacer()
         }
-        .padding(.vertical, 8)
-        .padding(.horizontal, 16)
+        .padding(.vertical, AppLayout.Spacing.small)
+        .padding(.horizontal, AppLayout.Spacing.medium)
         .background(Theme.backgroundSecondary)
-        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .clipShape(RoundedRectangle(cornerRadius: AppLayout.CornerRadius.medium))
     }
 
     @ViewBuilder
@@ -68,10 +68,10 @@ public struct RowView: View {
         Image(systemName: "book.closed.fill")
             .resizable()
             .scaledToFit()
-            .frame(width: 50, height: 75)
-            .foregroundColor(Theme.accent.opacity(0.3))
+            .frame(width: AppLayout.ImageSize.width, height: AppLayout.ImageSize.height)
+            .foregroundColor(Theme.accent.opacity(Theme.accentOpacityLow))
             .background(Theme.backgroundSecondary)
-            .cornerRadius(6)
+            .cornerRadius(AppLayout.CornerRadius.small)
     }
 }
 
