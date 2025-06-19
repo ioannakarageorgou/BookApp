@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		012F98582E04422200F37FA6 /* SharedUI in Frameworks */ = {isa = PBXBuildFile; productRef = 012F98572E04422200F37FA6 /* SharedUI */; };
 		015EC5092DFB19870029F87C /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 015EC5082DFB19870029F87C /* ComposableArchitecture */; };
 		019AEB0A2E000A5700AE732F /* BookAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 019AEB092E000A5700AE732F /* BookAPIClient */; };
 		01F43F932DFC236C0001279E /* NetworkClient in Frameworks */ = {isa = PBXBuildFile; productRef = 01F43F922DFC236C0001279E /* NetworkClient */; };
@@ -77,6 +78,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				01F43F932DFC236C0001279E /* NetworkClient in Frameworks */,
+				012F98582E04422200F37FA6 /* SharedUI in Frameworks */,
 				019AEB0A2E000A5700AE732F /* BookAPIClient in Frameworks */,
 				015EC5092DFB19870029F87C /* ComposableArchitecture in Frameworks */,
 			);
@@ -149,6 +151,7 @@
 				015EC5082DFB19870029F87C /* ComposableArchitecture */,
 				01F43F922DFC236C0001279E /* NetworkClient */,
 				019AEB092E000A5700AE732F /* BookAPIClient */,
+				012F98572E04422200F37FA6 /* SharedUI */,
 			);
 			productName = BookApp;
 			productReference = 0199F20F2DFB15750083EDEE /* BookApp.app */;
@@ -187,6 +190,7 @@
 				015EC5072DFB19870029F87C /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
 				01F43F912DFC236C0001279E /* XCLocalSwiftPackageReference "NetworkClient" */,
 				019AEB082E000A5700AE732F /* XCLocalSwiftPackageReference "BookAPIClient" */,
+				012F98562E04422200F37FA6 /* XCLocalSwiftPackageReference "SharedUI" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 0199F2102DFB15750083EDEE /* Products */;
@@ -519,6 +523,10 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
+		012F98562E04422200F37FA6 /* XCLocalSwiftPackageReference "SharedUI" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = SharedUI;
+		};
 		019AEB082E000A5700AE732F /* XCLocalSwiftPackageReference "BookAPIClient" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = BookAPIClient;
@@ -541,6 +549,10 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		012F98572E04422200F37FA6 /* SharedUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SharedUI;
+		};
 		015EC5082DFB19870029F87C /* ComposableArchitecture */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 015EC5072DFB19870029F87C /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;

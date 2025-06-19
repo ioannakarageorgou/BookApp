@@ -1,10 +1,10 @@
 import SwiftUI
 
-public struct BookRowView: View {
+public struct RowView: View {
     public let title: String
     public let subtitle: String?
     public let thumbnailURL: URL?
-    
+
     public init(
         title: String,
         subtitle: String? = nil,
@@ -14,7 +14,7 @@ public struct BookRowView: View {
         self.subtitle = subtitle
         self.thumbnailURL = thumbnailURL
     }
-    
+
     public var body: some View {
         HStack(alignment: .top, spacing: 12) {
             if let url = thumbnailURL {
@@ -39,12 +39,12 @@ public struct BookRowView: View {
             } else {
                 placeholderImage
             }
-            
+
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
                     .font(.headline)
                     .lineLimit(2)
-                
+
                 if let subtitle {
                     Text(subtitle)
                         .font(.subheadline)
@@ -52,15 +52,13 @@ public struct BookRowView: View {
                         .lineLimit(1)
                 }
             }
-            
+
             Spacer()
         }
         .padding(.vertical, 8)
         .padding(.horizontal, 16)
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(title), \(subtitle ?? "No subtitle")")
     }
-    
+
     @ViewBuilder
     private var placeholderImage: some View {
         Image(systemName: "book.closed.fill")
@@ -74,9 +72,21 @@ public struct BookRowView: View {
 
 
 #Preview("Loading/Loaded Image") {
-    BookRowView(title: "SwiftUI Essentials", subtitle: "John Appleseed", thumbnailURL: URL(string: "https://picsum.photos/50/75"))
+    RowView(
+        title: "SwiftUI Essentials",
+        subtitle: "John Appleseed",
+        thumbnailURL: URL(
+            string: "https://picsum.photos/50/75"
+        )
+    )
 }
 
 #Preview("Failed Image/No Image URL") {
-    BookRowView(title: "Failed to load", subtitle: nil, thumbnailURL: URL(string: "https://invalid.url"))
+    RowView(
+        title: "Failed to load",
+        subtitle: nil,
+        thumbnailURL: URL(
+            string: "https://invalid.url"
+        )
+    )
 }

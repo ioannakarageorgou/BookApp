@@ -1,5 +1,6 @@
 import SwiftUI
 import ComposableArchitecture
+import SharedUI
 
 struct LoadedBooksView: View {
     let books: [Book]
@@ -14,7 +15,7 @@ struct LoadedBooksView: View {
 
                 LazyVStack(spacing: 8) {
                     ForEach(books) { book in
-                        BookRowView(
+                        RowView(
                             title: book.title,
                             subtitle: book.subtitle,
                             thumbnailURL: book.thumbnailURL
