@@ -11,6 +11,12 @@ let package = Package(
             name: "SharedUI",
             targets: ["SharedUI"]),
     ],
+    dependencies: [
+        .package(
+            url: "https://github.com/pointfreeco/swift-snapshot-testing",
+            from: "1.10.0"
+        ),
+    ],
     targets: [
         .target(
             name: "SharedUI",
@@ -21,7 +27,10 @@ let package = Package(
         ),
         .testTarget(
             name: "SharedUITests",
-            dependencies: ["SharedUI"]
+            dependencies: [
+                "SharedUI",
+                .product(name: "SnapshotTesting", package: "swift-snapshot-testing")
+            ]
         ),
     ]
 )
