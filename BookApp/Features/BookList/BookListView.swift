@@ -14,7 +14,7 @@ struct BookListView: View {
             }
             .padding(.top, AppLayout.Spacing.large)
             .background(Theme.background.ignoresSafeArea())
-            .onAppear { store.send(.fetchBooks) }
+            .onAppear { store.send(.fetchBooks()) }
         }
     }
 
@@ -39,7 +39,7 @@ struct BookListView: View {
             .textFieldStyle(RoundedBorderTextFieldStyle())
             .padding(.horizontal)
             .submitLabel(.search)
-            .onSubmit { store.send(.fetchBooks) }
+            .onSubmit { store.send(.fetchBooks()) }
         }
     }
 
@@ -52,7 +52,7 @@ struct BookListView: View {
                     LoadingView(message: "Loading books...")
 
                 case .error(let message):
-                    ErrorView(message: message) { store.send(.fetchBooks) }
+                    ErrorView(message: message) { store.send(.fetchBooks()) }
 
                 case .loaded(let books) where books.isEmpty:
                     EmptyPlaceholderView(
@@ -62,9 +62,55 @@ struct BookListView: View {
                     )
 
                 case .loaded(let books):
-                    LoadedBooksView(books: books)
+                    loadedBooksView(for: books)
                 }
             }
+        }
+    }
+}
+
+private extension BookListView {
+    @ViewBuilder
+    private func loadedBooksView(for books: [Book]) -> some View {
+        WithPerceptionTracking {
+            ScrollView {
+                VStack(alignment: .leading, spacing: AppLayout.Spacing.medium) {
+                    Text("Books")
+                        .font(.title2)
+                        .bold()
+                        .foregroundColor(Theme.textPrimary)
+                        .padding(.horizontal)
+
+                    LazyVStack(spacing: AppLayout.Spacing.small) {
+                        ForEach(books) { book in
+                            RowView(
+                                title: book.title,
+                                subtitle: book.subtitle,
+                                thumbnailURL: book.secureThumbnailURL
+                            )
+                        }
+
+                        if store.hasMorePages {
+                            Button(action: {
+                                store.send(.fetchNextPage)
+                            }) {
+                                if store.isLoadingNextPage {
+                                    ProgressView()
+                                        .padding()
+                                } else {
+                                    Text("Load More")
+                                        .foregroundColor(Theme.accent)
+                                        .padding()
+                                }
+                            }
+                        }
+
+                    }
+                }
+                .padding(.vertical)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .background(Theme.background.ignoresSafeArea())
         }
     }
 }

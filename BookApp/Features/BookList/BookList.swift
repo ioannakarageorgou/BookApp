@@ -3,44 +3,82 @@ import ComposableArchitecture
 
 @Reducer
 struct BookList {
+    @ObservableState
     struct State: Equatable {
         var books: Loading<[Book]> = .idle
         var searchQuery: String = ""
+
+        var isLoadingNextPage = false
+        var totalItems: Int = 0
+        var currentPage = 0
+        var hasMorePages: Bool {
+            switch books {
+            case .loaded(let loadedBooks):
+                return loadedBooks.count < totalItems
+            default:
+                return false
+            }
+        }
     }
 
     enum Action {
-        case fetchBooks
-        case booksResponse(Result<[Book], Error>)
+        case fetchBooks(reset: Bool = true)
+        case booksResponse(Result<PagedBooks, Error>)
         case searchQueryChanged(String)
+        case fetchNextPage
     }
 
     let booksRepository: BooksRepositoryProviding
 
     func reduce(into state: inout State, action: Action) -> Effect<Action> {
         switch action {
-        case .fetchBooks:
-            state.books = .loading
-            let query = state.searchQuery.isEmpty ? "*" : state.searchQuery
+        case let .fetchBooks(reset):
+            if reset {
+                state.books = .loading
+                state.currentPage = 0
+                state.isLoadingNextPage = false
+            } else {
+                state.isLoadingNextPage = true
+            }
+
+            let page = reset ? 0 : state.currentPage + 1
+            let query = state.searchQuery.isEmpty ? "*" : state.searchQuery.trimmingCharacters(in: .whitespaces)
+
             return .run { send in
                 do {
-                    let books = try await booksRepository.fetchBooks(query: query)
-                    await send(.booksResponse(.success(books)))
+                    let pagedBooks = try await booksRepository.fetchBooks(query: query, page: page)
+                    await send(.booksResponse(.success(pagedBooks)))
                 } catch {
                     await send(.booksResponse(.failure(error)))
                 }
             }
 
+        case let .booksResponse(.success(pagedBooks)):
+            state.isLoadingNextPage = false
+
+            switch state.books {
+            case .loaded(let existingBooks):
+                let combined = existingBooks + pagedBooks.books
+                state.books = .loaded(combined)
+            default:
+                state.books = .loaded(pagedBooks.books)
+            }
+
+            state.currentPage += 1
+            state.totalItems = pagedBooks.totalItems
+            return .none
+
+        case let .booksResponse(.failure(error)):
+            state.isLoadingNextPage = false
+            state.books = .error(error.localizedDescription)
+            return .none
+
         case let .searchQueryChanged(query):
             state.searchQuery = query
             return .none
 
-        case let .booksResponse(.success(books)):
-            state.books = .loaded(books)
-            return .none
-
-        case let .booksResponse(.failure(error)):
-            state.books = .error("Oops, something went wrong: \(error.localizedDescription)")
-            return .none
+        case .fetchNextPage:
+            return .send(.fetchBooks(reset: false))
         }
     }
 }

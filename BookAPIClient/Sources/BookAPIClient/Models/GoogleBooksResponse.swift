@@ -1,7 +1,9 @@
 public struct GoogleBooksResponse: Decodable, Equatable {
-    public let items: [Volume]
+    public let totalItems: Int
+    public let items: [Volume]?
 
-    public init(items: [Volume]) {
+    public init(totalItems: Int, items: [Volume]?) {
+        self.totalItems = totalItems
         self.items = items
     }
 }
