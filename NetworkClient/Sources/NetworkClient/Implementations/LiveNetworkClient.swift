@@ -23,7 +23,16 @@ struct LiveNetworkClient: NetworkClient {
         do {
             return try JSONDecoder().decode(T.Response.self, from: data)
         } catch {
-            throw NetworkError.decodingError
+#if DEBUG
+            if let rawJSON = String(data: data, encoding: .utf8) {
+                print("🧩 Decoding failed for \(T.Response.self)")
+                print("📦 Raw JSON: \(rawJSON)")
+            } else {
+                print("🧩 Decoding failed. Could not convert data to string.")
+            }
+            print("🐛 Decoding error: \(error)")
+#endif
+            throw NetworkError.decodingError(error)
         }
     }
 }

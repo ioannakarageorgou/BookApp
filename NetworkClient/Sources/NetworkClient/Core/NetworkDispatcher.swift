@@ -19,14 +19,19 @@ struct NetworkDispatcher {
             }
 
             guard (200..<300).contains(httpResponse.statusCode) else {
+#if DEBUG
+                let errorBody = String(data: data, encoding: .utf8) ?? "<unreadable>"
+                print("🚨 HTTP Error \(httpResponse.statusCode)")
+                print("📄 Body: \(errorBody)")
+#endif
                 throw NetworkError.httpError(httpResponse.statusCode)
             }
 
             return data
-        } catch let error as NetworkError {
-            throw error
+        } catch let urlError as URLError {
+            throw NetworkError.transportError(urlError)
         } catch {
-            throw NetworkError.unknown
+            throw NetworkError.unknown(error)
         }
     }
 }
