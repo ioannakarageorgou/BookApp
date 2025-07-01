@@ -9,9 +9,9 @@ struct BookListView: View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             NavigationStack {
                 VStack(alignment: .leading, spacing: AppLayout.Spacing.large) {
-                    title()
-                    searchBar()
-                    booksList()
+                    appTitle
+                    searchBar
+                    booksList
                 }
                 .padding(.top, AppLayout.Spacing.large)
                 .background(Theme.background.ignoresSafeArea())
@@ -31,7 +31,7 @@ struct BookListView: View {
     }
 
     @ViewBuilder
-    private func title() -> some View {
+    private var appTitle: some View {
         Text("My Books App")
             .font(.largeTitle.bold())
             .foregroundColor(Theme.textPrimary)
@@ -39,7 +39,7 @@ struct BookListView: View {
     }
 
     @ViewBuilder
-    private func searchBar() -> some View {
+    private var searchBar: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             TextField(
                 "Search books...",
@@ -56,7 +56,7 @@ struct BookListView: View {
     }
 
     @ViewBuilder
-    private func booksList() -> some View {
+    private var booksList: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             Group {
                 switch viewStore.books {
@@ -83,11 +83,11 @@ struct BookListView: View {
 
 private extension BookListView {
     @ViewBuilder
-    private func loadedBooksView(for books: [Book]) -> some View {
+    func loadedBooksView(for books: [Book]) -> some View {
         WithPerceptionTracking {
             ScrollView {
                 VStack(alignment: .leading, spacing: AppLayout.Spacing.medium) {
-                    loadedBooksTitle()
+                    loadedBooksTitle
                     booksListView(for: books)
                 }
                 .padding(.vertical)
@@ -98,7 +98,7 @@ private extension BookListView {
     }
 
     @ViewBuilder
-    func loadedBooksTitle() -> some View {
+    var loadedBooksTitle: some View {
         Text("Books")
             .font(.title2)
             .bold()
@@ -110,7 +110,7 @@ private extension BookListView {
     func booksListView(for books: [Book]) -> some View {
         LazyVStack(spacing: AppLayout.Spacing.small) {
             booksForEach(books)
-            loadMoreButton()
+            loadMoreButton
         }
     }
 
@@ -129,7 +129,7 @@ private extension BookListView {
     }
 
     @ViewBuilder
-    private func loadMoreButton() -> some View {
+    var loadMoreButton: some View {
         WithPerceptionTracking {
             if store.hasMorePages {
                 Button {

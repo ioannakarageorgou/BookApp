@@ -21,44 +21,8 @@ public struct RowView: View {
     public var body: some View {
         Button(action: onTap) {
             HStack(alignment: .top, spacing: AppLayout.Spacing.medium) {
-                if let url = thumbnailURL {
-                    AsyncImage(url: url) { phase in
-                        switch phase {
-                        case .empty:
-                            ProgressView()
-                                .progressViewStyle(CircularProgressViewStyle(tint: Theme.accent))
-                                .frame(width: AppLayout.ImageSize.width, height: AppLayout.ImageSize.height)
-                        case .success(let image):
-                            image
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: AppLayout.ImageSize.width, height: AppLayout.ImageSize.height)
-                                .clipped()
-                                .cornerRadius(AppLayout.CornerRadius.small)
-                        case .failure(_):
-                            placeholderImage
-                        @unknown default:
-                            placeholderImage
-                        }
-                    }
-                } else {
-                    placeholderImage
-                }
-
-                VStack(alignment: .leading, spacing: AppLayout.Spacing.tiny) {
-                    Text(title)
-                        .font(.headline)
-                        .foregroundColor(Theme.textPrimary)
-                        .lineLimit(2)
-
-                    if let subtitle {
-                        Text(subtitle)
-                            .font(.subheadline)
-                            .foregroundColor(Theme.textSecondary)
-                            .lineLimit(1)
-                    }
-                }
-
+                thumbnailView
+                contentView
                 Spacer()
             }
             .padding(.vertical, AppLayout.Spacing.small)
@@ -68,9 +32,53 @@ public struct RowView: View {
         }
         .buttonStyle(.plain)
     }
+}
+
+private extension RowView {
+    @ViewBuilder
+    var thumbnailView: some View {
+        if let url = thumbnailURL {
+            AsyncImage(url: url) { phase in
+                switch phase {
+                case .empty:
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: Theme.accent))
+                        .frame(width: AppLayout.ImageSize.width, height: AppLayout.ImageSize.height)
+                case .success(let image):
+                    image
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: AppLayout.ImageSize.width, height: AppLayout.ImageSize.height)
+                        .clipped()
+                        .cornerRadius(AppLayout.CornerRadius.small)
+                default:
+                    placeholderImage
+                }
+            }
+        } else {
+            placeholderImage
+        }
+    }
 
     @ViewBuilder
-    private var placeholderImage: some View {
+    var contentView: some View {
+        VStack(alignment: .leading, spacing: AppLayout.Spacing.tiny) {
+            Text(title)
+                .font(.headline)
+                .foregroundColor(Theme.textPrimary)
+                .lineLimit(2)
+
+            if let subtitle {
+                Text(subtitle)
+                    .font(.subheadline)
+                    .foregroundColor(Theme.textSecondary)
+                    .lineLimit(1)
+            }
+        }
+    }
+
+    @ViewBuilder
+    var placeholderImage: some View {
         Image(systemName: "book.closed.fill")
             .resizable()
             .scaledToFit()
