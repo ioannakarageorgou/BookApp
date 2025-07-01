@@ -42,7 +42,7 @@ struct BookList {
             }
 
             let page = reset ? 0 : state.currentPage + 1
-            let query = state.searchQuery.isEmpty ? "*" : state.searchQuery.trimmingCharacters(in: .whitespaces)
+            let query = state.searchQuery.isEmpty ? "bestsellers" : state.searchQuery.trimmingCharacters(in: .whitespaces)
 
             return .run { send in
                 do {
@@ -55,15 +55,17 @@ struct BookList {
 
         case let .booksResponse(.success(pagedBooks)):
             state.isLoadingNextPage = false
+            var allBooks: [Book] = []
 
             switch state.books {
             case .loaded(let existingBooks):
-                let combined = existingBooks + pagedBooks.books
-                state.books = .loaded(combined)
+                allBooks = existingBooks + pagedBooks.books
             default:
-                state.books = .loaded(pagedBooks.books)
+                allBooks = pagedBooks.books
             }
+            let deduplicated = Dictionary(grouping: allBooks, by: \.id).compactMap { $0.value.first }
 
+            state.books = .loaded(deduplicated)
             state.currentPage += 1
             state.totalItems = pagedBooks.totalItems
             return .none

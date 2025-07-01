@@ -82,7 +82,7 @@ private extension BookListView {
                         .padding(.horizontal)
 
                     LazyVStack(spacing: AppLayout.Spacing.small) {
-                        ForEach(books) { book in
+                        ForEach(books, id: \.id) { book in
                             RowView(
                                 title: book.title,
                                 subtitle: book.subtitle,
