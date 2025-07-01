@@ -15,9 +15,11 @@ public enum AppLayout {
         public static let large: CGFloat = 20
     }
 
-    struct ImageSize {
-        static let width: CGFloat = 50
-        static let height: CGFloat = 75
+    public struct ImageSize {
+        public static let width: CGFloat = 50
+        public static let height: CGFloat = 75
+        public static let mediumWidth: CGFloat = 120
+        public static let mediumHeight: CGFloat = 180
     }
 
     public enum Duration {
@@ -26,7 +28,7 @@ public enum AppLayout {
         public static let long: Double = 0.6
     }
 
-    struct Scale {
-        static let progressView: CGFloat = 1.2
+    public struct Scale {
+        public static let progressView: CGFloat = 1.2
     }
 }

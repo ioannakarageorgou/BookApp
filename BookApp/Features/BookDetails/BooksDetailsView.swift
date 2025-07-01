@@ -7,7 +7,7 @@ struct BookDetailsView: View {
 
     var body: some View {
         WithPerceptionTracking {
-            VStack(alignment: .leading, spacing: 16) {
+            VStack(alignment: .leading, spacing: AppLayout.Spacing.medium) {
                 switch store.bookDetails {
                 case .idle, .loading:
                     LoadingView(message: "Loading book details...")
@@ -17,45 +17,109 @@ struct BookDetailsView: View {
                         store.send(.fetchDetails)
                     }
 
-                case .loaded(let book):
-                    ScrollView {
-                        VStack(alignment: .leading, spacing: 16) {
-                            if let url = book.thumbnailURL {
-                                AsyncImage(url: url) { image in
-                                    image
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fit)
-                                } placeholder: {
-                                    ProgressView()
-                                }
-                                .frame(height: 200)
-                                .cornerRadius(12)
-                            }
-
-                            Text(book.title)
-                                .font(.title)
-                                .bold()
-
-                            if let subtitle = book.subtitle {
-                                Text(subtitle)
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
-                            }
-
-                            if let desc = book.description {
-                                Text(desc)
-                                    .font(.body)
-                            }
-
-                            Spacer()
-                        }
-                        .padding()
-                    }
+                case .loaded(let details):
+                    content(details)
                 }
             }
             .onAppear { store.send(.fetchDetails) }
-            .navigationTitle("Details")
+            .navigationTitle("Book Details")
             .background(Theme.background.ignoresSafeArea())
         }
+    }
+}
+
+private extension BookDetailsView {
+    @ViewBuilder
+    func content(_ details: Details) -> some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: AppLayout.Spacing.large) {
+                header(details)
+                Divider().background(Theme.accent.opacity(0.3))
+                description(details.description)
+                Spacer(minLength: AppLayout.Spacing.large)
+            }
+            .padding(AppLayout.Spacing.medium)
+        }
+    }
+
+    @ViewBuilder
+    func header(_ details: Details) -> some View {
+        HStack(alignment: .top, spacing: AppLayout.Spacing.medium) {
+            coverImage(details.thumbnailURL)
+            titleAndSubtitle(title: details.title, subtitle: details.subtitle)
+        }
+    }
+
+    @ViewBuilder
+    func coverImage(_ url: URL?) -> some View {
+        if let url {
+            AsyncImage(url: url) { phase in
+                switch phase {
+                case .empty:
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: Theme.accent))
+                        .scaleEffect(AppLayout.Scale.progressView)
+                        .frame(width: AppLayout.ImageSize.mediumWidth, height: AppLayout.ImageSize.mediumHeight)
+                case .success(let image):
+                    image
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: AppLayout.ImageSize.mediumWidth, height: AppLayout.ImageSize.mediumHeight)
+                        .cornerRadius(AppLayout.CornerRadius.medium)
+                default:
+                    placeholderImage
+                        .frame(width: AppLayout.ImageSize.mediumWidth, height: AppLayout.ImageSize.mediumHeight)
+                }
+            }
+        } else {
+            placeholderImage
+                .frame(width: AppLayout.ImageSize.mediumWidth, height: AppLayout.ImageSize.mediumHeight)
+        }
+    }
+
+    @ViewBuilder
+    func titleAndSubtitle(title: String, subtitle: String?) -> some View {
+        VStack(alignment: .leading, spacing: AppLayout.Spacing.small) {
+            Text(title)
+                .font(.headline)
+                .foregroundColor(Theme.textPrimary)
+                .lineLimit(2)
+                .multilineTextAlignment(.leading)
+
+            if let subtitle, !subtitle.isEmpty {
+                Text(subtitle)
+                    .font(.subheadline)
+                    .foregroundColor(Theme.textSecondary)
+                    .lineLimit(2)
+                    .multilineTextAlignment(.leading)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    @ViewBuilder
+    func description(_ text: String?) -> some View {
+        if let htmlDesc = text,
+           !htmlDesc.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            Text(htmlDesc.htmlToPlainString)
+                .font(.body)
+                .foregroundColor(Theme.textPrimary)
+                .lineSpacing(AppLayout.Spacing.tiny)
+        } else {
+            Text("No description available.")
+                .font(.body)
+                .italic()
+                .foregroundColor(Theme.textSecondary)
+        }
+    }
+
+    var placeholderImage: some View {
+        Image(systemName: "book.closed.fill")
+            .resizable()
+            .scaledToFit()
+            .foregroundColor(Theme.accent.opacity(Theme.accentOpacityLow))
+            .background(Theme.backgroundSecondary)
+            .cornerRadius(AppLayout.CornerRadius.medium)
+            .shadow(color: Color.black.opacity(0.1), radius: AppLayout.CornerRadius.small, x: 0, y: 2)
     }
 }
