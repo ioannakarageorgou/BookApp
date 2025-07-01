@@ -6,15 +6,27 @@ struct BookListView: View {
     let store: StoreOf<BookList>
 
     var body: some View {
-        WithPerceptionTracking {
-            VStack(alignment: .leading, spacing: AppLayout.Spacing.large) {
-                title()
-                searchBar()
-                booksList()
+        WithViewStore(store, observe: { $0 }) { viewStore in
+            NavigationStack {
+                VStack(alignment: .leading, spacing: AppLayout.Spacing.large) {
+                    title()
+                    searchBar()
+                    booksList()
+                }
+                .padding(.top, AppLayout.Spacing.large)
+                .background(Theme.background.ignoresSafeArea())
+                .onAppear { store.send(.fetchBooks()) }
+                .navigationDestination(
+                    item: viewStore.binding(
+                        get: \.bookDetails,
+                        send: { _ in .dismissBookDetails }
+                    )
+                ) { _ in
+                    IfLetStore(store.scope(state: \.bookDetails, action: \.bookDetails)) {
+                        BookDetailsView(store: $0)
+                    }
+                }
             }
-            .padding(.top, AppLayout.Spacing.large)
-            .background(Theme.background.ignoresSafeArea())
-            .onAppear { store.send(.fetchBooks()) }
         }
     }
 
@@ -75,42 +87,61 @@ private extension BookListView {
         WithPerceptionTracking {
             ScrollView {
                 VStack(alignment: .leading, spacing: AppLayout.Spacing.medium) {
-                    Text("Books")
-                        .font(.title2)
-                        .bold()
-                        .foregroundColor(Theme.textPrimary)
-                        .padding(.horizontal)
-
-                    LazyVStack(spacing: AppLayout.Spacing.small) {
-                        ForEach(books, id: \.id) { book in
-                            RowView(
-                                title: book.title,
-                                subtitle: book.subtitle,
-                                thumbnailURL: book.secureThumbnailURL
-                            )
-                        }
-
-                        if store.hasMorePages {
-                            Button(action: {
-                                store.send(.fetchNextPage)
-                            }) {
-                                if store.isLoadingNextPage {
-                                    ProgressView()
-                                        .padding()
-                                } else {
-                                    Text("Load More")
-                                        .foregroundColor(Theme.accent)
-                                        .padding()
-                                }
-                            }
-                        }
-
-                    }
+                    loadedBooksTitle()
+                    booksListView(for: books)
                 }
                 .padding(.vertical)
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
             .background(Theme.background.ignoresSafeArea())
+        }
+    }
+
+    @ViewBuilder
+    func loadedBooksTitle() -> some View {
+        Text("Books")
+            .font(.title2)
+            .bold()
+            .foregroundColor(Theme.textPrimary)
+            .padding(.horizontal)
+    }
+
+    @ViewBuilder
+    func booksListView(for books: [Book]) -> some View {
+        LazyVStack(spacing: AppLayout.Spacing.small) {
+            booksForEach(books)
+            loadMoreButton()
+        }
+    }
+
+    @ViewBuilder
+    func booksForEach(_ books: [Book]) -> some View {
+        WithPerceptionTracking {
+            ForEach(books, id: \.id) { book in
+                RowView(
+                    title: book.title,
+                    subtitle: book.subtitle,
+                    thumbnailURL: book.thumbnailURL,
+                    onTap: { store.send(.bookTapped(book)) }
+                )
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func loadMoreButton() -> some View {
+        WithPerceptionTracking {
+            if store.hasMorePages {
+                Button {
+                    store.send(.fetchNextPage)
+                } label: {
+                    if store.isLoadingNextPage {
+                        ProgressView().padding()
+                    } else {
+                        Text("Load More").foregroundColor(Theme.accent).padding()
+                    }
+                }
+            }
         }
     }
 }
