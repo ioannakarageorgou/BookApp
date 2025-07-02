@@ -51,7 +51,7 @@ private extension BooksRepository {
             id: volume.id,
             title: volume.volumeInfo.title,
             subtitle: extractSubtitle(from: volume.volumeInfo),
-            description: volume.volumeInfo.description,
+            description: volume.volumeInfo.description?.htmlToPlainString,
             authors: volume.volumeInfo.authors ?? [],
             publisher: volume.volumeInfo.publisher,
             publishedDate: volume.volumeInfo.publishedDate,

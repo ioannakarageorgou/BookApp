@@ -99,9 +99,8 @@ private extension BookDetailsView {
 
     @ViewBuilder
     func description(_ text: String?) -> some View {
-        if let htmlDesc = text,
-           !htmlDesc.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            Text(htmlDesc.htmlToPlainString)
+        if let text, !text.isEmpty {
+            Text(text)
                 .font(.body)
                 .foregroundColor(Theme.textPrimary)
                 .lineSpacing(AppLayout.Spacing.tiny)
@@ -113,6 +112,7 @@ private extension BookDetailsView {
         }
     }
 
+    @ViewBuilder
     var placeholderImage: some View {
         Image(systemName: "book.closed.fill")
             .resizable()
