@@ -10,6 +10,7 @@
 		012F98582E04422200F37FA6 /* SharedUI in Frameworks */ = {isa = PBXBuildFile; productRef = 012F98572E04422200F37FA6 /* SharedUI */; };
 		015EC5092DFB19870029F87C /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 015EC5082DFB19870029F87C /* ComposableArchitecture */; };
 		019AEB0A2E000A5700AE732F /* BookAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 019AEB092E000A5700AE732F /* BookAPIClient */; };
+		01D6E0B82E15559100E14ED4 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 01D6E0B72E15559100E14ED4 /* RealmSwift */; };
 		01F43F932DFC236C0001279E /* NetworkClient in Frameworks */ = {isa = PBXBuildFile; productRef = 01F43F922DFC236C0001279E /* NetworkClient */; };
 /* End PBXBuildFile section */
 
@@ -80,6 +81,7 @@
 				01F43F932DFC236C0001279E /* NetworkClient in Frameworks */,
 				012F98582E04422200F37FA6 /* SharedUI in Frameworks */,
 				019AEB0A2E000A5700AE732F /* BookAPIClient in Frameworks */,
+				01D6E0B82E15559100E14ED4 /* RealmSwift in Frameworks */,
 				015EC5092DFB19870029F87C /* ComposableArchitecture in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -152,6 +154,7 @@
 				01F43F922DFC236C0001279E /* NetworkClient */,
 				019AEB092E000A5700AE732F /* BookAPIClient */,
 				012F98572E04422200F37FA6 /* SharedUI */,
+				01D6E0B72E15559100E14ED4 /* RealmSwift */,
 			);
 			productName = BookApp;
 			productReference = 0199F20F2DFB15750083EDEE /* BookApp.app */;
@@ -191,6 +194,7 @@
 				01F43F912DFC236C0001279E /* XCLocalSwiftPackageReference "NetworkClient" */,
 				019AEB082E000A5700AE732F /* XCLocalSwiftPackageReference "BookAPIClient" */,
 				012F98562E04422200F37FA6 /* XCLocalSwiftPackageReference "SharedUI" */,
+				01D6E0B62E15559100E14ED4 /* XCRemoteSwiftPackageReference "realm-swift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 0199F2102DFB15750083EDEE /* Products */;
@@ -546,6 +550,14 @@
 				minimumVersion = 1.20.2;
 			};
 		};
+		01D6E0B62E15559100E14ED4 /* XCRemoteSwiftPackageReference "realm-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/realm/realm-swift";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -561,6 +573,11 @@
 		019AEB092E000A5700AE732F /* BookAPIClient */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = BookAPIClient;
+		};
+		01D6E0B72E15559100E14ED4 /* RealmSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 01D6E0B62E15559100E14ED4 /* XCRemoteSwiftPackageReference "realm-swift" */;
+			productName = RealmSwift;
 		};
 		01F43F922DFC236C0001279E /* NetworkClient */ = {
 			isa = XCSwiftPackageProductDependency;

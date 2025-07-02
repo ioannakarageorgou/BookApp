@@ -1,12 +1,12 @@
 import Foundation
 
-public struct Book: Equatable, Identifiable {
-    public let id: String
-    public let title: String
-    public let subtitle: String?
-    public let thumbnailURL: URL?
+struct Book: Equatable, Identifiable {
+    let id: String
+    let title: String
+    let subtitle: String?
+    let thumbnailURL: URL?
 
-    public init(
+    init(
         id: String,
         title: String,
         subtitle: String? = nil,
