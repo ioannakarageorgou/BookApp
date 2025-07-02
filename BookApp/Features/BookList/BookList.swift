@@ -35,7 +35,7 @@ struct BookList {
         case dismissBookDetails
     }
 
-    let booksRepository: BooksRepositoryProviding
+    @Dependency(\.booksRepository) var booksRepository
 
     public var body: some ReducerOf<Self> {
         Reduce { state, action in
@@ -105,7 +105,7 @@ struct BookList {
             }
         }
         .ifLet(\.bookDetails, action: \.bookDetails) {
-            BookDetails(booksRepository: booksRepository)
+            BookDetails()
         }
     }
 }

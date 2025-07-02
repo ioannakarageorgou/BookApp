@@ -14,7 +14,7 @@ struct BookDetails {
         case bookDetailsResponse(Result<Details, Error>)
     }
 
-    let booksRepository: BooksRepositoryProviding
+    @Dependency(\.booksRepository) var booksRepository
 
     func reduce(into state: inout State, action: Action) -> Effect<Action> {
         switch action {
