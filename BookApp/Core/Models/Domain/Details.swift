@@ -1,12 +1,9 @@
 import Foundation
 
-struct Details: Equatable, Identifiable {
-    let id: String
-    let title: String
-    let subtitle: String?
+struct Details: Equatable {
+    let core: Book
     let description: String?
     let authors: [String]
     let publisher: String?
     let publishedDate: String?
-    let thumbnailURL: URL?
 }

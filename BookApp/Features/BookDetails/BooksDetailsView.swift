@@ -45,8 +45,35 @@ private extension BookDetailsView {
     @ViewBuilder
     func header(_ details: Details) -> some View {
         HStack(alignment: .top, spacing: AppLayout.Spacing.medium) {
-            coverImage(details.thumbnailURL)
-            titleAndSubtitle(title: details.title, subtitle: details.subtitle)
+            coverImage(details.core.thumbnailURL)
+            VStack(alignment: .leading, spacing: AppLayout.Spacing.medium) {
+                titleAndSubtitle(title: details.core.title, subtitle: details.core.subtitle)
+                favoriteButton.padding(.top, AppLayout.Spacing.tiny)
+            }
+        }
+    }
+
+    @ViewBuilder
+    var favoriteButton: some View {
+        WithPerceptionTracking {
+            Button(action: {
+                store.send(.toggleFavoriteTapped)
+            }) {
+                Label(
+                    store.isFavorite ? "Remove from shelf" : "Add to shelf",
+                    systemImage: store.isFavorite ? "heart.fill" : "heart"
+                )
+                .labelStyle(.titleAndIcon)
+                .lineLimit(1)
+                .padding(.horizontal)
+                .padding(.vertical, AppLayout.Spacing.small)
+                .background(
+                    Capsule()
+                        .fill(store.isFavorite ? Theme.backgroundDestructive : Theme.secondaryBackgroundAccent)
+                )
+                .foregroundColor(store.isFavorite ? Theme.textDestructive : Theme.accent)
+            }
+            .buttonStyle(.plain)
         }
     }
 

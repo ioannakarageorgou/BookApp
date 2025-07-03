@@ -7,11 +7,13 @@ struct BookDetails {
     struct State: Equatable {
         let bookId: String
         var bookDetails: Loading<Details> = .idle
+        var isFavorite: Bool = false
     }
 
     enum Action {
         case fetchDetails
         case bookDetailsResponse(Result<Details, Error>)
+        case toggleFavoriteTapped
     }
 
     @Dependency(\.booksRepository) var booksRepository
@@ -31,10 +33,30 @@ struct BookDetails {
 
         case let .bookDetailsResponse(.success(details)):
             state.bookDetails = .loaded(details)
+            state.isFavorite = booksRepository.isFavorite(details.core)
             return .none
 
         case let .bookDetailsResponse(.failure(error)):
             state.bookDetails = .error(error.localizedDescription)
+            return .none
+
+        case .toggleFavoriteTapped:
+            guard let book = state.bookDetails.value?.core else {
+                return .none
+            }
+            do {
+                if state.isFavorite {
+                    try booksRepository.removeFromFavorites(book)
+                    state.isFavorite = false
+                } else {
+                    try booksRepository.addToFavorites(book)
+                    state.isFavorite = true
+                }
+            } catch {
+                // TODO: Optionally log or handle the error
+                // For now, maybe just print it or set a .error state
+                print("Failed to update favorites: \(error)")
+            }
             return .none
         }
     }
