@@ -11,8 +11,7 @@ struct BookListView: View {
                 VStack(alignment: .leading, spacing: AppLayout.Spacing.medium) {
                     appTitle
                     favoritesSection
-                    searchBar
-                    booksList
+                    booksSection
                 }
                 .padding(.top, AppLayout.Spacing.large)
                 .background(Theme.background.ignoresSafeArea())
@@ -45,6 +44,18 @@ private extension BookListView {
     }
 
     @ViewBuilder
+    var booksSection: some View {
+        VStack(alignment: .leading, spacing: AppLayout.Spacing.medium) {
+            loadedBooksTitle
+            searchBar
+            booksList
+        }
+        .padding(AppLayout.Spacing.small)
+        .cornerRadius(AppLayout.CornerRadius.large)
+        .padding(.horizontal)
+    }
+
+    @ViewBuilder
     var searchBar: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             TextField(
@@ -55,7 +66,6 @@ private extension BookListView {
                 )
             )
             .textFieldStyle(RoundedBorderTextFieldStyle())
-            .padding(.horizontal)
             .submitLabel(.search)
             .onSubmit { store.send(.fetchBooks()) }
         }
@@ -92,12 +102,7 @@ private extension BookListView {
     func loadedBooksView(for books: [Book]) -> some View {
         WithPerceptionTracking {
             ScrollView {
-                VStack(alignment: .leading, spacing: AppLayout.Spacing.medium) {
-                    loadedBooksTitle
-                    booksListView(for: books)
-                }
-                .padding(.vertical)
-                .frame(maxWidth: .infinity, alignment: .leading)
+                booksListView(for: books)
             }
             .background(Theme.background.ignoresSafeArea())
         }
@@ -106,10 +111,8 @@ private extension BookListView {
     @ViewBuilder
     var loadedBooksTitle: some View {
         Text("Books")
-            .font(.title2)
-            .bold()
+            .font(.title3.bold())
             .foregroundColor(Theme.textPrimary)
-            .padding(.horizontal)
     }
 
     @ViewBuilder
@@ -158,10 +161,9 @@ private extension BookListView {
         WithPerceptionTracking {
             if case let .loaded(favorites) = store.favoriteBooks, !favorites.isEmpty {
                 VStack(alignment: .leading, spacing: AppLayout.Spacing.medium) {
-                    Text("My shelf")
+                    Text("Favorites shelf")
                         .font(.title3.bold())
                         .foregroundColor(Theme.textPrimary)
-                        .padding(.horizontal)
 
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: AppLayout.Spacing.medium) {
@@ -177,6 +179,10 @@ private extension BookListView {
                         .padding(.horizontal)
                     }
                 }
+                .padding(AppLayout.Spacing.small)
+                .background(Theme.backgroundSecondary)
+                .cornerRadius(AppLayout.CornerRadius.large)
+                .padding(.horizontal)
             }
         }
     }
