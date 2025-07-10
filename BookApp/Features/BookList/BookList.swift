@@ -8,6 +8,8 @@ struct BookList {
         var books: Loading<[Book]> = .idle
         var searchQuery: String = ""
 
+        var favoriteBooks: Loading<[Book]> = .idle
+
         var isLoadingNextPage = false
         var totalItems: Int = 0
         var currentPage = 0
@@ -33,6 +35,8 @@ struct BookList {
         case bookTapped(Book)
         case bookDetails(BookDetails.Action)
         case dismissBookDetails
+
+        case loadFavorites
     }
 
     @Dependency(\.booksRepository) var booksRepository
@@ -101,6 +105,16 @@ struct BookList {
                 return .none
 
             case .bookDetails:
+                return .none
+
+            case .loadFavorites:
+                state.favoriteBooks = .loading
+                do {
+                    let favorites = try booksRepository.getFavoriteBooks()
+                    state.favoriteBooks = .loaded(favorites)
+                } catch {
+                    state.favoriteBooks = .error(error.localizedDescription)
+                }
                 return .none
             }
         }

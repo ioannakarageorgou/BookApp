@@ -8,14 +8,18 @@ struct BookListView: View {
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             NavigationStack {
-                VStack(alignment: .leading, spacing: AppLayout.Spacing.large) {
+                VStack(alignment: .leading, spacing: AppLayout.Spacing.medium) {
                     appTitle
+                    favoritesSection
                     searchBar
                     booksList
                 }
                 .padding(.top, AppLayout.Spacing.large)
                 .background(Theme.background.ignoresSafeArea())
-                .onAppear { store.send(.fetchBooks()) }
+                .onAppear {
+                    store.send(.fetchBooks())
+                    store.send(.loadFavorites)
+                }
                 .navigationDestination(
                     item: viewStore.binding(
                         get: \.bookDetails,
@@ -29,9 +33,11 @@ struct BookListView: View {
             }
         }
     }
+}
 
+private extension BookListView {
     @ViewBuilder
-    private var appTitle: some View {
+    var appTitle: some View {
         Text("My Books App")
             .font(.largeTitle.bold())
             .foregroundColor(Theme.textPrimary)
@@ -39,7 +45,7 @@ struct BookListView: View {
     }
 
     @ViewBuilder
-    private var searchBar: some View {
+    var searchBar: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             TextField(
                 "Search books...",
@@ -54,9 +60,11 @@ struct BookListView: View {
             .onSubmit { store.send(.fetchBooks()) }
         }
     }
+}
 
+private extension BookListView {
     @ViewBuilder
-    private var booksList: some View {
+    var booksList: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             Group {
                 switch viewStore.books {
@@ -79,9 +87,7 @@ struct BookListView: View {
             }
         }
     }
-}
 
-private extension BookListView {
     @ViewBuilder
     func loadedBooksView(for books: [Book]) -> some View {
         WithPerceptionTracking {
@@ -139,6 +145,36 @@ private extension BookListView {
                         ProgressView().padding()
                     } else {
                         Text("Load More").foregroundColor(Theme.accent).padding()
+                    }
+                }
+            }
+        }
+    }
+}
+
+private extension BookListView {
+    @ViewBuilder
+    var favoritesSection: some View {
+        WithPerceptionTracking {
+            if case let .loaded(favorites) = store.favoriteBooks, !favorites.isEmpty {
+                VStack(alignment: .leading, spacing: AppLayout.Spacing.medium) {
+                    Text("My shelf")
+                        .font(.title3.bold())
+                        .foregroundColor(Theme.textPrimary)
+                        .padding(.horizontal)
+
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: AppLayout.Spacing.medium) {
+                            ForEach(favorites, id: \.id) { book in
+                                CardView(
+                                    title: book.title,
+                                    thumbnailURL: book.thumbnailURL
+                                ) {
+                                    store.send(.bookTapped(book))
+                                }
+                            }
+                        }
+                        .padding(.horizontal)
                     }
                 }
             }
