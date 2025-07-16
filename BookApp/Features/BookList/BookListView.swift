@@ -117,37 +117,30 @@ private extension BookListView {
 
     @ViewBuilder
     func booksListView(for books: [Book]) -> some View {
-        LazyVStack(spacing: AppLayout.Spacing.small) {
-            booksForEach(books)
-            loadMoreButton
+        WithPerceptionTracking {
+            LazyVStack(spacing: AppLayout.Spacing.small) {
+                booksForEach(books)
+                if store.isLoadingNextPage {
+                    ProgressView()
+                        .padding()
+                }
+            }
         }
     }
 
     @ViewBuilder
     func booksForEach(_ books: [Book]) -> some View {
         WithPerceptionTracking {
-            ForEach(books, id: \.id) { book in
+            ForEach(Array(books.enumerated()), id: \.1.id) { index, book in
                 RowView(
                     title: book.title,
                     subtitle: book.subtitle,
                     thumbnailURL: book.thumbnailURL,
                     onTap: { store.send(.bookTapped(book)) }
                 )
-            }
-        }
-    }
-
-    @ViewBuilder
-    var loadMoreButton: some View {
-        WithPerceptionTracking {
-            if store.hasMorePages {
-                Button {
-                    store.send(.fetchNextPage)
-                } label: {
-                    if store.isLoadingNextPage {
-                        ProgressView().padding()
-                    } else {
-                        Text("Load More").foregroundColor(Theme.accent).padding()
+                .onAppear {
+                    if index >= books.count - 5 && store.hasMorePages && !store.isLoadingNextPage {
+                        store.send(.fetchNextPage)
                     }
                 }
             }

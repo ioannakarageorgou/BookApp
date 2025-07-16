@@ -92,7 +92,9 @@ struct BookList {
                 return .none
 
             case .fetchNextPage:
+                guard !state.isLoadingNextPage else { return .none }
                 return .send(.fetchBooks(reset: false))
+                    .debounce(id: CancelID.fetchNextPageDebounce, for: 0.5, scheduler: DispatchQueue.main)
 
             case .bookTapped(let book):
                 state.selectedBookID = book.id
@@ -121,5 +123,11 @@ struct BookList {
         .ifLet(\.bookDetails, action: \.bookDetails) {
             BookDetails()
         }
+    }
+}
+
+private extension BookList {
+    enum CancelID {
+        case fetchNextPageDebounce
     }
 }
