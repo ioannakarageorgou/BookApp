@@ -11,6 +11,8 @@
 		015EC5092DFB19870029F87C /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 015EC5082DFB19870029F87C /* ComposableArchitecture */; };
 		019AEB0A2E000A5700AE732F /* BookAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 019AEB092E000A5700AE732F /* BookAPIClient */; };
 		01D6E0B82E15559100E14ED4 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 01D6E0B72E15559100E14ED4 /* RealmSwift */; };
+		01E0E7802E291D0F00921F06 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 01E0E77F2E291D0F00921F06 /* RealmSwift */; };
+		01E0E7812E291D0F00921F06 /* RealmSwift in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 01E0E77F2E291D0F00921F06 /* RealmSwift */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		01F43F932DFC236C0001279E /* NetworkClient in Frameworks */ = {isa = PBXBuildFile; productRef = 01F43F922DFC236C0001279E /* NetworkClient */; };
 /* End PBXBuildFile section */
 
@@ -23,6 +25,20 @@
 			remoteInfo = BookApp;
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		01E0E7822E291D0F00921F06 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				01E0E7812E291D0F00921F06 /* RealmSwift in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		0186B6A02DFEF8C80024C08D /* BookAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BookAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -71,6 +87,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				01E0E7802E291D0F00921F06 /* RealmSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -94,6 +111,7 @@
 			children = (
 				019EBDE22DFEFBC60023EE4E /* BookAppTests */,
 				0199F2112DFB15750083EDEE /* BookApp */,
+				01E0E77E2E291D0F00921F06 /* Frameworks */,
 				0199F2102DFB15750083EDEE /* Products */,
 			);
 			sourceTree = "<group>";
@@ -107,6 +125,13 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		01E0E77E2E291D0F00921F06 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -117,6 +142,7 @@
 				0186B69C2DFEF8C80024C08D /* Sources */,
 				0186B69D2DFEF8C80024C08D /* Frameworks */,
 				0186B69E2DFEF8C80024C08D /* Resources */,
+				01E0E7822E291D0F00921F06 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -128,6 +154,7 @@
 			);
 			name = BookAppTests;
 			packageProductDependencies = (
+				01E0E77F2E291D0F00921F06 /* RealmSwift */,
 			);
 			productName = BookAppTests;
 			productReference = 0186B6A02DFEF8C80024C08D /* BookAppTests.xctest */;
@@ -575,6 +602,11 @@
 			productName = BookAPIClient;
 		};
 		01D6E0B72E15559100E14ED4 /* RealmSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 01D6E0B62E15559100E14ED4 /* XCRemoteSwiftPackageReference "realm-swift" */;
+			productName = RealmSwift;
+		};
+		01E0E77F2E291D0F00921F06 /* RealmSwift */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 01D6E0B62E15559100E14ED4 /* XCRemoteSwiftPackageReference "realm-swift" */;
 			productName = RealmSwift;

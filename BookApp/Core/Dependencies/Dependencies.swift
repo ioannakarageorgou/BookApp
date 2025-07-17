@@ -1,9 +1,9 @@
 import ComposableArchitecture
 import NetworkClient
 
+// For unit tests of your repository, keep the explicit initializer injection (BooksRepository(networkClient: mockClient)) for clarity
 struct NetworkClientKey: DependencyKey {
     static let liveValue: NetworkClient = makeLiveNetworkClient(apiKey: Secrets.googleBooksAPIKey)
-    // add testValue too for testing
 }
 
 struct BooksRepositoryKey: DependencyKey {
