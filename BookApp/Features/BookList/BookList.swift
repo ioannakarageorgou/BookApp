@@ -26,6 +26,7 @@ struct BookList {
         var bookDetails: BookDetails.State?
     }
 
+    @CasePathable
     enum Action {
         case fetchBooks(reset: Bool = true)
         case booksResponse(Result<PagedBooks, Error>)
@@ -37,6 +38,7 @@ struct BookList {
         case dismissBookDetails
 
         case loadFavorites
+        case favoritesResponse(Result<[Book], Error>)
     }
 
     @Dependency(\.booksRepository) var booksRepository
@@ -67,17 +69,16 @@ struct BookList {
 
             case let .booksResponse(.success(pagedBooks)):
                 state.isLoadingNextPage = false
-                var allBooks: [Book] = []
 
                 switch state.books {
-                case .loaded(let existingBooks):
-                    allBooks = existingBooks + pagedBooks.books
+                case .loaded(let existing):
+                    let existingIDs = Set(existing.map(\.id))
+                    let onlyNew = pagedBooks.books.filter { !existingIDs.contains($0.id) }
+                    state.books = .loaded(existing + onlyNew)
                 default:
-                    allBooks = pagedBooks.books
+                    state.books = .loaded(pagedBooks.books)
                 }
-                let deduplicated = Dictionary(grouping: allBooks, by: \.id).compactMap { $0.value.first }
 
-                state.books = .loaded(deduplicated)
                 state.currentPage += 1
                 state.totalItems = pagedBooks.totalItems
                 return .none
@@ -111,12 +112,21 @@ struct BookList {
 
             case .loadFavorites:
                 state.favoriteBooks = .loading
-                do {
-                    let favorites = try booksRepository.getFavoriteBooks()
-                    state.favoriteBooks = .loaded(favorites)
-                } catch {
-                    state.favoriteBooks = .error(error.localizedDescription)
+                return .run { send in
+                    do {
+                        let favorites = try booksRepository.getFavoriteBooks()
+                        await send(.favoritesResponse(.success(favorites)))
+                    } catch {
+                        await send(.favoritesResponse(.failure(error)))
+                    }
                 }
+
+            case let .favoritesResponse(.success(favorites)):
+                state.favoriteBooks = .loaded(favorites)
+                return .none
+
+            case let .favoritesResponse(.failure(error)):
+                state.favoriteBooks = .error(error.localizedDescription)
                 return .none
             }
         }

@@ -8,9 +8,9 @@ struct NetworkClientKey: DependencyKey {
 
 struct BooksRepositoryKey: DependencyKey {
     static var liveValue: BooksRepositoryProviding {
-        BooksRepository(networkClient: DependencyValues().networkClient)
+        @Dependency(\.networkClient) var networkClient
+        return BooksRepository(networkClient: networkClient)
     }
-    //    static let testValue: BooksRepositoryProviding = BooksRepositoryMock() // your mock for tests todo
 }
 
 extension DependencyValues {
