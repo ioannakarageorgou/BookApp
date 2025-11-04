@@ -3,8 +3,8 @@
 final class MockBooksRepository: BooksRepositoryProviding {
     var fetchBooksResult: Result<PagedBooks, Error>?
     var fetchBookDetailsResult: Result<Details, Error>?
-    var addToFavoritesError: Error?
-    var removeFromFavoritesError: Error?
+    var addToFavoritesResult: Result<Void, Error>?
+    var removeFromFavoritesResult: Result<Void, Error>?
     var getFavoriteBooksResult: Result<[Book], Error>?
     var isFavoriteResult: Bool?
 
@@ -29,18 +29,26 @@ final class MockBooksRepository: BooksRepositoryProviding {
     }
 
     func addToFavorites(_ book: Book) throws {
-        if let error = addToFavoritesError {
+        guard let result = addToFavoritesResult else {
+            fatalError("addToFavoritesResult not set in MockBooksRepository")
+        }
+        switch result {
+        case .success:
+            return
+        case .failure(let error):
             throw error
-        } else {
-            fatalError("addToFavorites not implemented in MockBooksRepository")
         }
     }
 
     func removeFromFavorites(_ book: Book) throws {
-        if let error = removeFromFavoritesError {
+        guard let result = removeFromFavoritesResult else {
+            fatalError("removeFromFavoritesResult not set in MockBooksRepository")
+        }
+        switch result {
+        case .success:
+            return
+        case .failure(let error):
             throw error
-        } else {
-            fatalError("removeFromFavorites not implemented in MockBooksRepository")
         }
     }
 
