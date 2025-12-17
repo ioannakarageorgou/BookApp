@@ -8,17 +8,30 @@ struct BookListView: View {
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             NavigationStack {
-                VStack(alignment: .leading, spacing: AppLayout.Spacing.medium) {
-                    appTitle
-                    favoritesSection
-                    booksSection
+                ZStack {
+                    Theme.background.ignoresSafeArea()
+
+                    switch viewStore.books {
+                    case .idle, .loading:
+                        LoadingView(message: "Loading books...")
+
+                    case .error(let message):
+                        ErrorView(message: message) {
+                            store.send(.fetchBooks())
+                        }
+
+                    case .loaded(let books):
+                        contentView(books: books, viewStore: viewStore)
+                    }
                 }
-                .padding(.top, AppLayout.Spacing.large)
-                .background(Theme.background.ignoresSafeArea())
                 .onAppear {
-                    store.send(.fetchBooks())
+                    // Only fetch if idle or error
+                    if case .idle = viewStore.books {
+                        store.send(.fetchBooks())
+                    }
                     store.send(.loadFavorites)
                 }
+                .navigationBarHidden(true)
                 .navigationDestination(
                     item: viewStore.binding(
                         get: \.bookDetails,
@@ -34,149 +47,222 @@ struct BookListView: View {
     }
 }
 
+// MARK: - Content View (Loaded State)
 private extension BookListView {
     @ViewBuilder
-    var appTitle: some View {
-        Text("My Books App")
-            .font(.largeTitle.bold())
-            .foregroundColor(Theme.textPrimary)
-            .padding(.horizontal)
-    }
-
-    @ViewBuilder
-    var booksSection: some View {
-        VStack(alignment: .leading, spacing: AppLayout.Spacing.medium) {
-            loadedBooksTitle
-            searchBar
-            booksList
-        }
-        .padding(AppLayout.Spacing.small)
-        .cornerRadius(AppLayout.CornerRadius.large)
-        .padding(.horizontal)
-    }
-
-    @ViewBuilder
-    var searchBar: some View {
-        WithViewStore(store, observe: { $0 }) { viewStore in
-            TextField(
-                "Search books...",
-                text: viewStore.binding(
-                    get: \.searchQuery,
-                    send: BookList.Action.searchQueryChanged
-                )
-            )
-            .textFieldStyle(RoundedBorderTextFieldStyle())
-            .submitLabel(.search)
-            .onSubmit { store.send(.fetchBooks()) }
+    func contentView(books: [Book], viewStore: ViewStoreOf<BookList>) -> some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 0) {
+                header
+                searchBar(viewStore: viewStore)
+                categoryTabs
+                favoritesSection
+                booksSection(books: books, viewStore: viewStore)
+            }
+            .padding(.top, AppLayout.Spacing.medium)
         }
     }
 }
 
+// MARK: - Header Section
 private extension BookListView {
     @ViewBuilder
-    var booksList: some View {
-        WithViewStore(store, observe: { $0 }) { viewStore in
-            Group {
-                switch viewStore.books {
-                case .idle, .loading:
-                    LoadingView(message: "Loading books...")
+    var header: some View {
+        HStack {
+            Text("Library")
+                .font(.system(size: AppLayout.FontSize.largeTitle, weight: .bold, design: .serif))
+                .foregroundColor(Theme.textPrimary)
 
-                case .error(let message):
-                    ErrorView(message: message) { store.send(.fetchBooks()) }
+            Spacer()
 
-                case .loaded(let books) where books.isEmpty:
-                    EmptyPlaceholderView(
-                        title: "No books found",
-                        message: "Try a different search query or check back later.",
-                        icon: "book"
+            profileButton
+        }
+        .padding(.horizontal, AppLayout.Spacing.medium)
+        .padding(.bottom, AppLayout.Spacing.small)
+    }
+
+    @ViewBuilder
+    var profileButton: some View {
+        Button(action: {
+            // TODO: Add profile action
+        }) {
+            Circle()
+                .fill(
+                    LinearGradient(
+                        colors: [Theme.accent, Theme.accentSecondary],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
                     )
-
-                case .loaded(let books):
-                    loadedBooksView(for: books)
-                }
-            }
-        }
-    }
-
-    @ViewBuilder
-    func loadedBooksView(for books: [Book]) -> some View {
-        WithPerceptionTracking {
-            ScrollView {
-                booksListView(for: books)
-            }
-            .background(Theme.background.ignoresSafeArea())
-        }
-    }
-
-    @ViewBuilder
-    var loadedBooksTitle: some View {
-        Text("Books")
-            .font(.title3.bold())
-            .foregroundColor(Theme.textPrimary)
-    }
-
-    @ViewBuilder
-    func booksListView(for books: [Book]) -> some View {
-        WithPerceptionTracking {
-            LazyVStack(spacing: AppLayout.Spacing.small) {
-                booksForEach(books)
-                if store.isLoadingNextPage {
-                    ProgressView()
-                        .padding()
-                }
-            }
-        }
-    }
-
-    @ViewBuilder
-    func booksForEach(_ books: [Book]) -> some View {
-        WithPerceptionTracking {
-            ForEach(Array(books.enumerated()), id: \.1.id) { index, book in
-                RowView(
-                    title: book.title,
-                    subtitle: book.subtitle,
-                    thumbnailURL: book.thumbnailURL,
-                    onTap: { store.send(.bookTapped(book)) }
                 )
-                .onAppear {
-                    if index >= books.count - 5 && store.hasMorePages && !store.isLoadingNextPage {
-                        store.send(.fetchNextPage)
-                    }
-                }
-            }
+                .frame(width: AppLayout.ImageSize.avatarSmall, height: AppLayout.ImageSize.avatarSmall)
+                .overlay(
+                    Text("JD")
+                        .font(.system(size: AppLayout.FontSize.footnote + 1, weight: .semibold)) // 14pt
+                        .foregroundColor(.white)
+                )
+                .cardShadowMedium()
         }
     }
 }
 
+// MARK: - Search & Categories
+private extension BookListView {
+    @ViewBuilder
+    func searchBar(viewStore: ViewStoreOf<BookList>) -> some View {
+        SearchBar(
+            text: viewStore.binding(
+                get: \.searchQuery,
+                send: BookList.Action.searchQueryChanged
+            ),
+            placeholder: "Search books, authors...",
+            onSubmit: {
+                store.send(.fetchBooks())
+            }
+        )
+        .padding(.horizontal, AppLayout.Spacing.medium)
+        .padding(.bottom, AppLayout.Spacing.large)
+    }
+
+    @ViewBuilder
+    var categoryTabs: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: AppLayout.Spacing.small) {
+                CategoryTab(title: "All", isSelected: true) {
+                    // TODO: Handle category selection
+                }
+                CategoryTab(title: "Popular", isSelected: false) {}
+                CategoryTab(title: "Fiction", isSelected: false) {}
+                CategoryTab(title: "Non-Fiction", isSelected: false) {}
+                CategoryTab(title: "Mystery", isSelected: false) {}
+            }
+            .padding(.horizontal, AppLayout.Spacing.medium)
+        }
+        .padding(.bottom, AppLayout.Spacing.extraLarge)
+    }
+}
+
+// MARK: - Favorites Section
 private extension BookListView {
     @ViewBuilder
     var favoritesSection: some View {
         WithPerceptionTracking {
             if case let .loaded(favorites) = store.favoriteBooks, !favorites.isEmpty {
                 VStack(alignment: .leading, spacing: AppLayout.Spacing.medium) {
-                    Text("Favorites shelf")
-                        .font(.title3.bold())
-                        .foregroundColor(Theme.textPrimary)
+                    SectionHeader(
+                        title: "Your Shelf",
+                        icon: "heart.fill",
+                        showSeeAll: true,
+                        onSeeAllTap: {
+                            // TODO: Navigate to all favorites
+                        }
+                    )
+                    .padding(.horizontal, AppLayout.Spacing.medium)
 
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: AppLayout.Spacing.medium) {
                             ForEach(favorites, id: \.id) { book in
-                                CardView(
+                                FavoriteBookCard(
                                     title: book.title,
-                                    thumbnailURL: book.thumbnailURL
-                                ) {
-                                    store.send(.bookTapped(book))
-                                }
+                                    subtitle: book.subtitle,
+                                    thumbnailURL: book.thumbnailURL,
+                                    onTap: { store.send(.bookTapped(book)) }
+                                )
                             }
                         }
-                        .padding(.horizontal)
+                        .padding(.horizontal, AppLayout.Spacing.medium)
                     }
                 }
-                .padding(AppLayout.Spacing.small)
-                .background(Theme.backgroundSecondary)
-                .cornerRadius(AppLayout.CornerRadius.large)
-                .padding(.horizontal)
+                .padding(.vertical, AppLayout.Spacing.large)
+                .background(favoritesSectionBackground)
+                .padding(.horizontal, AppLayout.Spacing.medium)
+                .padding(.bottom, AppLayout.Spacing.extraLarge)
             }
+        }
+    }
+
+    @ViewBuilder
+    var favoritesSectionBackground: some View {
+        RoundedRectangle(cornerRadius: AppLayout.CornerRadius.extraLarge)
+            .fill(
+                LinearGradient(
+                    colors: [
+                        Theme.accentLight.opacity(0.3),
+                        Theme.accentLight.opacity(0.15)
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: AppLayout.CornerRadius.extraLarge)
+                    .strokeBorder(Theme.accent.opacity(0.15), lineWidth: 1)
+            )
+    }
+}
+
+// MARK: - Books Grid Section
+private extension BookListView {
+    @ViewBuilder
+    func booksSection(books: [Book], viewStore: ViewStoreOf<BookList>) -> some View {
+        VStack(alignment: .leading, spacing: AppLayout.Spacing.medium) {
+            SectionHeader(title: "Discover")
+            .padding(.horizontal, AppLayout.Spacing.medium)
+
+            if books.isEmpty {
+                EmptyPlaceholderView(
+                    title: "No books found",
+                    message: "Try a different search query or check back later.",
+                    icon: "book.closed"
+                )
+            } else {
+                booksGrid(books: books, viewStore: viewStore)
+            }
+        }
+    }
+
+    @ViewBuilder
+    func booksGrid(books: [Book], viewStore: ViewStoreOf<BookList>) -> some View {
+        LazyVGrid(
+            columns: [
+                GridItem(.flexible(), spacing: AppLayout.Grid.booksSpacing),
+                GridItem(.flexible(), spacing: AppLayout.Grid.booksSpacing)
+            ],
+            spacing: AppLayout.Grid.booksSpacing
+        ) {
+            ForEach(Array(books.enumerated()), id: \.1.id) { index, book in
+                BookCard(
+                    title: book.title,
+                    subtitle: book.subtitle,
+                    thumbnailURL: book.thumbnailURL,
+                    onTap: { store.send(.bookTapped(book)) }
+                )
+                .onAppear {
+                    handlePagination(index: index, totalBooks: books.count, viewStore: viewStore)
+                }
+            }
+        }
+        .padding(.horizontal, AppLayout.Spacing.medium)
+        .padding(.bottom, AppLayout.Spacing.extraLarge)
+
+        if viewStore.isLoadingNextPage {
+            paginationLoader
+        }
+    }
+
+    @ViewBuilder
+    var paginationLoader: some View {
+        HStack {
+            Spacer()
+            ProgressView()
+                .tint(Theme.accent)
+            Spacer()
+        }
+        .padding(.vertical, AppLayout.Spacing.large)
+    }
+
+    func handlePagination(index: Int, totalBooks: Int, viewStore: ViewStoreOf<BookList>) {
+        if index >= totalBooks - 5 && viewStore.hasMorePages && !viewStore.isLoadingNextPage {
+            store.send(.fetchNextPage)
         }
     }
 }

@@ -15,7 +15,7 @@ public struct ErrorView: View {
     public var body: some View {
         VStack(spacing: AppLayout.Spacing.medium) {
             Text("😕")
-                .font(.system(size: 48))
+                .font(.system(size: AppLayout.FontSize.largeTitle))
 
             Text(message)
                 .font(.headline)

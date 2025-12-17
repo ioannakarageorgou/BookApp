@@ -86,21 +86,21 @@ private extension BookDetailsView {
                     ProgressView()
                         .progressViewStyle(CircularProgressViewStyle(tint: Theme.accent))
                         .scaleEffect(AppLayout.Scale.progressView)
-                        .frame(width: AppLayout.ImageSize.mediumWidth, height: AppLayout.ImageSize.mediumHeight)
+                        .frame(width: AppLayout.ImageSize.coverMediumWidth, height: AppLayout.ImageSize.coverMediumHeight)
                 case .success(let image):
                     image
                         .resizable()
                         .scaledToFill()
-                        .frame(width: AppLayout.ImageSize.mediumWidth, height: AppLayout.ImageSize.mediumHeight)
+                        .frame(width: AppLayout.ImageSize.coverMediumWidth, height: AppLayout.ImageSize.coverMediumHeight)
                         .cornerRadius(AppLayout.CornerRadius.medium)
                 default:
                     placeholderImage
-                        .frame(width: AppLayout.ImageSize.mediumWidth, height: AppLayout.ImageSize.mediumHeight)
+                        .frame(width: AppLayout.ImageSize.coverMediumWidth, height: AppLayout.ImageSize.coverMediumHeight)
                 }
             }
         } else {
             placeholderImage
-                .frame(width: AppLayout.ImageSize.mediumWidth, height: AppLayout.ImageSize.mediumHeight)
+                .frame(width: AppLayout.ImageSize.coverMediumWidth, height: AppLayout.ImageSize.coverMediumHeight)
         }
     }
 
