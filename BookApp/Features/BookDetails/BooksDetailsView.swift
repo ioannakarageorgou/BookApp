@@ -69,7 +69,7 @@ private extension BookDetailsView {
                 .padding(.vertical, AppLayout.Spacing.small)
                 .background(
                     Capsule()
-                        .fill(store.isFavorite ? Theme.backgroundDestructive : Theme.secondaryBackgroundAccent)
+                        .fill(store.isFavorite ? Theme.backgroundDestructive : Theme.backgroundAccent)
                 )
                 .foregroundColor(store.isFavorite ? Theme.textDestructive : Theme.accent)
             }
