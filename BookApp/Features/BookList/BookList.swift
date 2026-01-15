@@ -6,10 +6,13 @@ struct BookList {
     @ObservableState
     struct State: Equatable {
         var books: Loading<[Book]> = .idle
+        @Presents var bookDetails: BookDetails.State?
+
+        // MARK: - Search & Filters
         var searchQuery: String = ""
+        var selectedCategory: Category = .all
 
-        var favoriteBooks: Loading<[Book]> = .idle
-
+        // MARK: - Pagination
         var isLoadingNextPage = false
         var totalItems: Int = 0
         var currentPage = 0
@@ -22,21 +25,47 @@ struct BookList {
             }
         }
 
-        var selectedBookID: String?
-        var bookDetails: BookDetails.State?
+        // MARK: - Favorites
+        var favoriteBooks: Loading<[Book]> = .idle
+
+        // MARK: - Categories
+        enum Category: String, CaseIterable, Equatable {
+            case all = "All"
+            case popular = "Popular"
+            case fiction = "Fiction"
+            case nonFiction = "Non-Fiction"
+            case mystery = "Mystery"
+
+            var searchQuery: String {
+                switch self {
+                case .all: return "bestsellers"
+                case .popular: return "bestsellers"
+                case .fiction: return "fiction bestsellers"
+                case .nonFiction: return "nonfiction bestsellers"
+                case .mystery: return "mystery bestsellers"
+                }
+            }
+        }
     }
 
     @CasePathable
-    enum Action {
+    enum Action: BindableAction {
+        case binding(BindingAction<State>)
+
+        // MARK: - Books
         case fetchBooks(reset: Bool = true)
         case booksResponse(Result<PagedBooks, Error>)
-        case searchQueryChanged(String)
         case fetchNextPage
 
-        case bookTapped(Book)
-        case bookDetails(BookDetails.Action)
-        case dismissBookDetails
+        // MARK: - Search & Categories
+        case searchSubmitted
+        case categorySelected(State.Category)
 
+        // MARK: - Navigation
+        case bookTapped(Book)
+        case bookDetails(PresentationAction<BookDetails.Action>)
+
+        // MARK: - Favorites
         case loadFavorites
         case favoritesResponse(Result<[Book], Error>)
     }
@@ -44,8 +73,13 @@ struct BookList {
     @Dependency(\.booksRepository) var booksRepository
 
     public var body: some ReducerOf<Self> {
+        BindingReducer()
         Reduce { state, action in
             switch action {
+            case .binding:
+                return .none
+
+                // MARK: - Books Fetching
             case let .fetchBooks(reset):
                 if reset {
                     state.books = .loading
@@ -56,7 +90,14 @@ struct BookList {
                 }
 
                 let page = reset ? 0 : state.currentPage + 1
-                let query = state.searchQuery.isEmpty ? "bestsellers" : state.searchQuery.trimmingCharacters(in: .whitespaces)
+
+                // Determine query: user search takes precedence, otherwise use category
+                let query: String
+                if !state.searchQuery.trimmingCharacters(in: .whitespaces).isEmpty {
+                    query = state.searchQuery.trimmingCharacters(in: .whitespaces)
+                } else {
+                    query = state.selectedCategory.searchQuery
+                }
 
                 return .run { send in
                     do {
@@ -88,28 +129,30 @@ struct BookList {
                 state.books = .error(error.localizedDescription)
                 return .none
 
-            case let .searchQueryChanged(query):
-                state.searchQuery = query
-                return .none
-
             case .fetchNextPage:
-                guard !state.isLoadingNextPage else { return .none }
+                guard !state.isLoadingNextPage, state.hasMorePages else { return .none }
                 return .send(.fetchBooks(reset: false))
                     .debounce(id: CancelID.fetchNextPageDebounce, for: 0.5, scheduler: DispatchQueue.main)
 
-            case .bookTapped(let book):
-                state.selectedBookID = book.id
-                state.bookDetails = BookDetails.State(bookId: book.id)
-                return .none
+                // MARK: - Search & Categories
+            case .searchSubmitted:
+                return .send(.fetchBooks(reset: true))
 
-            case .dismissBookDetails:
-                state.selectedBookID = nil
-                state.bookDetails = nil
+            case let .categorySelected(category):
+                state.selectedCategory = category
+                // Clear search when switching categories
+                state.searchQuery = ""
+                return .send(.fetchBooks(reset: true))
+
+                // MARK: - Navigation
+            case .bookTapped(let book):
+                state.bookDetails = BookDetails.State(bookId: book.id)
                 return .none
 
             case .bookDetails:
                 return .none
 
+                // MARK: - Favorites
             case .loadFavorites:
                 state.favoriteBooks = .loading
                 return .run { send in
@@ -130,7 +173,7 @@ struct BookList {
                 return .none
             }
         }
-        .ifLet(\.bookDetails, action: \.bookDetails) {
+        .ifLet(\.$bookDetails, action: \.bookDetails) {
             BookDetails()
         }
     }

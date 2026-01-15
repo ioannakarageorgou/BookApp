@@ -3,45 +3,36 @@ import ComposableArchitecture
 import SharedUI
 
 struct BookListView: View {
-    let store: StoreOf<BookList>
+    @Bindable var store: StoreOf<BookList>
 
     var body: some View {
-        WithViewStore(store, observe: { $0 }) { viewStore in
-            NavigationStack {
-                ZStack {
-                    Theme.background.ignoresSafeArea()
+        NavigationStack {
+            ZStack {
+                Theme.background.ignoresSafeArea()
 
-                    switch viewStore.books {
-                    case .idle, .loading:
-                        LoadingView(message: "Loading books...")
+                switch store.books {
+                case .idle, .loading:
+                    LoadingView(message: "Loading books...")
 
-                    case .error(let message):
-                        ErrorView(message: message) {
-                            store.send(.fetchBooks())
-                        }
-
-                    case .loaded(let books):
-                        contentView(books: books, viewStore: viewStore)
-                    }
-                }
-                .onAppear {
-                    // Only fetch if idle or error
-                    if case .idle = viewStore.books {
+                case .error(let message):
+                    ErrorView(message: message) {
                         store.send(.fetchBooks())
                     }
-                    store.send(.loadFavorites)
+
+                case .loaded(let books):
+                    contentView(books: books)
                 }
-                .navigationBarHidden(true)
-                .navigationDestination(
-                    item: viewStore.binding(
-                        get: \.bookDetails,
-                        send: { _ in .dismissBookDetails }
-                    )
-                ) { _ in
-                    IfLetStore(store.scope(state: \.bookDetails, action: \.bookDetails)) {
-                        BookDetailsView(store: $0)
-                    }
+            }
+            .onAppear {
+                if case .idle = store.books {
+                    store.send(.fetchBooks())
                 }
+                store.send(.loadFavorites)
+            }
+            .sheet(
+                item: $store.scope(state: \.bookDetails, action: \.bookDetails)
+            ) { detailStore in
+                BookDetailsView(store: detailStore)
             }
         }
     }
@@ -50,14 +41,14 @@ struct BookListView: View {
 // MARK: - Content View (Loaded State)
 private extension BookListView {
     @ViewBuilder
-    func contentView(books: [Book], viewStore: ViewStoreOf<BookList>) -> some View {
+    func contentView(books: [Book]) -> some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
                 header
-                searchBar(viewStore: viewStore)
+                searchBar
                 categoryTabs
                 favoritesSection
-                booksSection(books: books, viewStore: viewStore)
+                booksSection(books: books)
             }
             .padding(.top, AppLayout.Spacing.medium)
         }
@@ -97,7 +88,7 @@ private extension BookListView {
                 .frame(width: AppLayout.ImageSize.avatarSmall, height: AppLayout.ImageSize.avatarSmall)
                 .overlay(
                     Text("JD")
-                        .font(.system(size: AppLayout.FontSize.footnote + 1, weight: .semibold)) // 14pt
+                        .font(.system(size: AppLayout.FontSize.footnote, weight: .semibold))
                         .foregroundColor(.white)
                 )
                 .cardShadowMedium()
@@ -108,15 +99,12 @@ private extension BookListView {
 // MARK: - Search & Categories
 private extension BookListView {
     @ViewBuilder
-    func searchBar(viewStore: ViewStoreOf<BookList>) -> some View {
+    var searchBar: some View {
         SearchBar(
-            text: viewStore.binding(
-                get: \.searchQuery,
-                send: BookList.Action.searchQueryChanged
-            ),
+            text: $store.searchQuery,
             placeholder: "Search books, authors...",
             onSubmit: {
-                store.send(.fetchBooks())
+                store.send(.searchSubmitted)
             }
         )
         .padding(.horizontal, AppLayout.Spacing.medium)
@@ -127,13 +115,14 @@ private extension BookListView {
     var categoryTabs: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: AppLayout.Spacing.small) {
-                CategoryTab(title: "All", isSelected: true) {
-                    // TODO: Handle category selection
+                ForEach(BookList.State.Category.allCases, id: \.self) { category in
+                    CategoryTab(
+                        title: category.rawValue,
+                        isSelected: store.selectedCategory == category
+                    ) {
+                        store.send(.categorySelected(category))
+                    }
                 }
-                CategoryTab(title: "Popular", isSelected: false) {}
-                CategoryTab(title: "Fiction", isSelected: false) {}
-                CategoryTab(title: "Non-Fiction", isSelected: false) {}
-                CategoryTab(title: "Mystery", isSelected: false) {}
             }
             .padding(.horizontal, AppLayout.Spacing.medium)
         }
@@ -145,38 +134,36 @@ private extension BookListView {
 private extension BookListView {
     @ViewBuilder
     var favoritesSection: some View {
-        WithPerceptionTracking {
-            if case let .loaded(favorites) = store.favoriteBooks, !favorites.isEmpty {
-                VStack(alignment: .leading, spacing: AppLayout.Spacing.medium) {
-                    SectionHeader(
-                        title: "Your Shelf",
-                        icon: "heart.fill",
-                        showSeeAll: true,
-                        onSeeAllTap: {
-                            // TODO: Navigate to all favorites
-                        }
-                    )
-                    .padding(.horizontal, AppLayout.Spacing.medium)
-
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: AppLayout.Spacing.medium) {
-                            ForEach(favorites, id: \.id) { book in
-                                FavoriteBookCard(
-                                    title: book.title,
-                                    subtitle: book.subtitle,
-                                    thumbnailURL: book.thumbnailURL,
-                                    onTap: { store.send(.bookTapped(book)) }
-                                )
-                            }
-                        }
-                        .padding(.horizontal, AppLayout.Spacing.medium)
+        if case let .loaded(favorites) = store.favoriteBooks, !favorites.isEmpty {
+            VStack(alignment: .leading, spacing: AppLayout.Spacing.medium) {
+                SectionHeader(
+                    title: "Your Shelf",
+                    icon: "heart.fill",
+                    showSeeAll: true,
+                    onSeeAllTap: {
+                        // TODO: Navigate to all favorites
                     }
-                }
-                .padding(.vertical, AppLayout.Spacing.large)
-                .background(favoritesSectionBackground)
+                )
                 .padding(.horizontal, AppLayout.Spacing.medium)
-                .padding(.bottom, AppLayout.Spacing.extraLarge)
+
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: AppLayout.Spacing.medium) {
+                        ForEach(favorites, id: \.id) { book in
+                            FavoriteBookCard(
+                                title: book.title,
+                                subtitle: book.subtitle,
+                                thumbnailURL: book.thumbnailURL,
+                                onTap: { store.send(.bookTapped(book)) }
+                            )
+                        }
+                    }
+                    .padding(.horizontal, AppLayout.Spacing.medium)
+                }
             }
+            .padding(.vertical, AppLayout.Spacing.large)
+            .background(favoritesSectionBackground)
+            .padding(.horizontal, AppLayout.Spacing.medium)
+            .padding(.bottom, AppLayout.Spacing.extraLarge)
         }
     }
 
@@ -203,10 +190,10 @@ private extension BookListView {
 // MARK: - Books Grid Section
 private extension BookListView {
     @ViewBuilder
-    func booksSection(books: [Book], viewStore: ViewStoreOf<BookList>) -> some View {
+    func booksSection(books: [Book]) -> some View {
         VStack(alignment: .leading, spacing: AppLayout.Spacing.medium) {
             SectionHeader(title: "Discover")
-            .padding(.horizontal, AppLayout.Spacing.medium)
+                .padding(.horizontal, AppLayout.Spacing.medium)
 
             if books.isEmpty {
                 EmptyPlaceholderView(
@@ -215,13 +202,13 @@ private extension BookListView {
                     icon: "book.closed"
                 )
             } else {
-                booksGrid(books: books, viewStore: viewStore)
+                booksGrid(books: books)
             }
         }
     }
 
     @ViewBuilder
-    func booksGrid(books: [Book], viewStore: ViewStoreOf<BookList>) -> some View {
+    func booksGrid(books: [Book]) -> some View {
         LazyVGrid(
             columns: [
                 GridItem(.flexible(), spacing: AppLayout.Grid.booksSpacing),
@@ -237,14 +224,14 @@ private extension BookListView {
                     onTap: { store.send(.bookTapped(book)) }
                 )
                 .onAppear {
-                    handlePagination(index: index, totalBooks: books.count, viewStore: viewStore)
+                    handlePagination(index: index, totalBooks: books.count)
                 }
             }
         }
         .padding(.horizontal, AppLayout.Spacing.medium)
         .padding(.bottom, AppLayout.Spacing.extraLarge)
 
-        if viewStore.isLoadingNextPage {
+        if store.isLoadingNextPage {
             paginationLoader
         }
     }
@@ -260,8 +247,8 @@ private extension BookListView {
         .padding(.vertical, AppLayout.Spacing.large)
     }
 
-    func handlePagination(index: Int, totalBooks: Int, viewStore: ViewStoreOf<BookList>) {
-        if index >= totalBooks - 5 && viewStore.hasMorePages && !viewStore.isLoadingNextPage {
+    func handlePagination(index: Int, totalBooks: Int) {
+        if index >= totalBooks - 5 && store.hasMorePages && !store.isLoadingNextPage {
             store.send(.fetchNextPage)
         }
     }
