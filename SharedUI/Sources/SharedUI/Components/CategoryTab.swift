@@ -20,7 +20,7 @@ public struct CategoryTab: View {
         Button(action: action) {
             Text(title)
                 .font(.system(size: AppLayout.FontSize.footnote, weight: .semibold))
-                .foregroundColor(isSelected ? .white : Theme.textSecondary)
+                .foregroundColor(isSelected ? Theme.background : Theme.textSecondary)
                 .padding(.horizontal, AppLayout.Spacing.large)
                 .padding(.vertical, AppLayout.Spacing.small)
                 .background(

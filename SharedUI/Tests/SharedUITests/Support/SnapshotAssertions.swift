@@ -22,7 +22,6 @@ func assertLightAndDarkSnapshots<V: View>(
         assertSnapshot(
             of: view,
             as: .image(
-                precision: 0.99,
                 perceptualPrecision: 0.98,
                 layout: layout,
                 traits: UITraitCollection {
