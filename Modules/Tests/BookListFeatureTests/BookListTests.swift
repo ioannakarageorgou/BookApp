@@ -94,10 +94,48 @@ struct BookListTests {
         await store.send(.fetchBooks(reset: false)) {
             $0.isLoadingNextPage = true
         }
-        await withKnownIssue("A failed next page replaces the whole list with an error; fixed in Phase 3") {
-            await store.receive(\.booksResponse) {
-                $0.isLoadingNextPage = false
-            }
+        await store.receive(\.booksResponse) {
+            $0.isLoadingNextPage = false
+            $0.nextPageError = TestError.someError.localizedDescription
+        }
+    }
+
+    @Test
+    func retryAfterNextPageErrorClearsItAndLoadsThePage() async {
+        var state = firstPageLoaded()
+        state.nextPageError = "Offline"
+        let store = makeStore(state) {
+            $0.booksClient.fetchBooks = fetchBooks(.success(PagedBooks(books: [newBook], totalItems: 40)))
+        }
+
+        await store.send(.fetchBooks(reset: false)) {
+            $0.isLoadingNextPage = true
+            $0.nextPageError = nil
+        }
+        await store.receive(\.booksResponse) {
+            $0.books = .loaded(Book.fixtures + [self.newBook])
+            $0.pagesLoaded = 2
+            $0.isLoadingNextPage = false
+        }
+    }
+
+    @Test
+    func newSearchClearsNextPageError() async {
+        var state = firstPageLoaded()
+        state.nextPageError = "Offline"
+        let store = makeStore(state) {
+            $0.booksClient.fetchBooks = fetchBooks(.success(PagedBooks(books: [newBook], totalItems: 1)))
+        }
+
+        await store.send(.fetchBooks(reset: true)) {
+            $0.books = .loading
+            $0.pagesLoaded = 0
+            $0.nextPageError = nil
+        }
+        await store.receive(\.booksResponse) {
+            $0.books = .loaded([self.newBook])
+            $0.pagesLoaded = 1
+            $0.totalItems = 1
         }
     }
 
@@ -131,6 +169,15 @@ struct BookListTests {
     func fetchNextPageIsIgnoredWhileAPageIsLoading() async {
         var state = firstPageLoaded()
         state.isLoadingNextPage = true
+        let store = makeStore(state)
+
+        await store.send(.fetchNextPage)
+    }
+
+    @Test
+    func fetchNextPageIsIgnoredAfterANextPageError() async {
+        var state = firstPageLoaded()
+        state.nextPageError = "Offline"
         let store = makeStore(state)
 
         await store.send(.fetchNextPage)

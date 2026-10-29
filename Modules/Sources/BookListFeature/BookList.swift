@@ -18,6 +18,8 @@ public struct BookList {
 
         // MARK: - Pagination
         public var isLoadingNextPage: Bool
+        /// Set when loading the next page fails; the books already loaded stay visible.
+        public var nextPageError: String?
         public var totalItems: Int
         public var pagesLoaded: Int
         public var hasMorePages: Bool {
@@ -57,6 +59,7 @@ public struct BookList {
             searchQuery: String = "",
             selectedCategory: Category = .all,
             isLoadingNextPage: Bool = false,
+            nextPageError: String? = nil,
             totalItems: Int = 0,
             pagesLoaded: Int = 0,
             favoriteBooks: Loading<[Book]> = .idle
@@ -66,6 +69,7 @@ public struct BookList {
             self.searchQuery = searchQuery
             self.selectedCategory = selectedCategory
             self.isLoadingNextPage = isLoadingNextPage
+            self.nextPageError = nextPageError
             self.totalItems = totalItems
             self.pagesLoaded = pagesLoaded
             self.favoriteBooks = favoriteBooks
@@ -108,6 +112,7 @@ public struct BookList {
 
                 // MARK: - Books Fetching
             case let .fetchBooks(reset):
+                state.nextPageError = nil
                 if reset {
                     state.books = .loading
                     state.pagesLoaded = 0
@@ -157,11 +162,17 @@ public struct BookList {
 
             case let .booksResponse(.failure(error)):
                 state.isLoadingNextPage = false
-                state.books = .error(error.localizedDescription)
+                if case .loaded = state.books {
+                    // A next page failed: keep the books the user is looking at.
+                    state.nextPageError = error.localizedDescription
+                } else {
+                    state.books = .error(error.localizedDescription)
+                }
                 return .none
 
             case .fetchNextPage:
-                guard !state.isLoadingNextPage, state.hasMorePages else { return .none }
+                // After a failed page, wait for the user to tap Retry instead of retrying on every scroll.
+                guard !state.isLoadingNextPage, state.nextPageError == nil, state.hasMorePages else { return .none }
                 return .send(.fetchBooks(reset: false))
                     .debounce(id: CancelID.fetchNextPageDebounce, for: 0.5, scheduler: DispatchQueue.main)
 

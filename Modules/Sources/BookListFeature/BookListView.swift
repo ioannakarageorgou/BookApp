@@ -239,6 +239,8 @@ private extension BookListView {
 
         if store.isLoadingNextPage {
             paginationLoader
+        } else if let message = store.nextPageError {
+            nextPageErrorRow(message)
         }
     }
 
@@ -250,6 +252,26 @@ private extension BookListView {
                 .tint(Theme.accent)
             Spacer()
         }
+        .padding(.vertical, AppLayout.Spacing.large)
+    }
+
+    /// Shown below the books when loading the next page fails; the books stay visible.
+    @ViewBuilder
+    func nextPageErrorRow(_ message: String) -> some View {
+        VStack(spacing: AppLayout.Spacing.small) {
+            Text(message)
+                .font(.footnote)
+                .foregroundColor(Theme.textSecondary)
+                .multilineTextAlignment(.center)
+
+            Button("Retry") {
+                store.send(.fetchBooks(reset: false))
+            }
+            .font(.subheadline.weight(.semibold))
+            .foregroundColor(Theme.accent)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.horizontal, AppLayout.Spacing.medium)
         .padding(.vertical, AppLayout.Spacing.large)
     }
 
@@ -268,3 +290,20 @@ private extension BookListView {
         }
     )
 }
+
+#if DEBUG
+#Preview("Next page failed") {
+    BookListView(
+        store: Store(
+            initialState: BookList.State(
+                books: .loaded(Book.fixtures),
+                nextPageError: "The Internet connection appears to be offline.",
+                totalItems: 40,
+                pagesLoaded: 1
+            )
+        ) {
+            BookList()
+        }
+    )
+}
+#endif
