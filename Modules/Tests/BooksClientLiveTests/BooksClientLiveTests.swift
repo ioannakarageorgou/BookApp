@@ -104,7 +104,6 @@ struct BooksClientLiveTests {
     }
 
     @Test
-    @MainActor
     func detailsStripHTMLFromDescriptionAndDefaultAuthors() {
         let details = Details(volume: Self.volume(description: "<b>Bold</b> claims"))
 
