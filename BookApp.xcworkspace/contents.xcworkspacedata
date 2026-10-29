@@ -8,9 +8,6 @@
       location = "group:NetworkClient">
    </FileRef>
    <FileRef
-      location = "group:BookAPIClient">
-   </FileRef>
-   <FileRef
-      location = "group:SharedUI">
+      location = "group:Modules">
    </FileRef>
 </Workspace>

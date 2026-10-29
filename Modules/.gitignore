@@ -6,3 +6,6 @@ DerivedData/
 .swiftpm/configuration/registries.json
 .swiftpm/xcode/package.xcworkspace/contents.xcworkspacedata
 .netrc
+
+# Versions are pinned by BookApp.xcworkspace/xcshareddata/swiftpm/Package.resolved
+/Package.resolved

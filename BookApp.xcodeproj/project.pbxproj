@@ -218,8 +218,7 @@
 			packageReferences = (
 				015EC5072DFB19870029F87C /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
 				01F43F912DFC236C0001279E /* XCLocalSwiftPackageReference "NetworkClient" */,
-				019AEB082E000A5700AE732F /* XCLocalSwiftPackageReference "BookAPIClient" */,
-				012F98562E04422200F37FA6 /* XCLocalSwiftPackageReference "SharedUI" */,
+				019AEB082E000A5700AE732F /* XCLocalSwiftPackageReference "Modules" */,
 				01D6E0B62E15559100E14ED4 /* XCRemoteSwiftPackageReference "realm-swift" */,
 			);
 			preferredProjectObjectVersion = 77;
@@ -525,13 +524,9 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		012F98562E04422200F37FA6 /* XCLocalSwiftPackageReference "SharedUI" */ = {
+		019AEB082E000A5700AE732F /* XCLocalSwiftPackageReference "Modules" */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = SharedUI;
-		};
-		019AEB082E000A5700AE732F /* XCLocalSwiftPackageReference "BookAPIClient" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = BookAPIClient;
+			relativePath = Modules;
 		};
 		01F43F912DFC236C0001279E /* XCLocalSwiftPackageReference "NetworkClient" */ = {
 			isa = XCLocalSwiftPackageReference;

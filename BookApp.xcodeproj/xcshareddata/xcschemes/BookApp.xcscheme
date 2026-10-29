@@ -46,7 +46,7 @@
                BlueprintIdentifier = "BookAPIClientTests"
                BuildableName = "BookAPIClientTests"
                BlueprintName = "BookAPIClientTests"
-               ReferencedContainer = "container:BookAPIClient">
+               ReferencedContainer = "container:Modules">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -60,7 +60,7 @@
                BlueprintIdentifier = "SharedUITests"
                BuildableName = "SharedUITests"
                BlueprintName = "SharedUITests"
-               ReferencedContainer = "container:SharedUI">
+               ReferencedContainer = "container:Modules">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>

@@ -31,14 +31,14 @@
     },
     {
       "target" : {
-        "containerPath" : "container:BookAPIClient",
+        "containerPath" : "container:Modules",
         "identifier" : "BookAPIClientTests",
         "name" : "BookAPIClientTests"
       }
     },
     {
       "target" : {
-        "containerPath" : "container:SharedUI",
+        "containerPath" : "container:Modules",
         "identifier" : "SharedUITests",
         "name" : "SharedUITests"
       }
