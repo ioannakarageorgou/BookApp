@@ -142,13 +142,19 @@ struct BookListTests {
     // MARK: - Pagination trigger
 
     @Test
-    func fetchNextPageLoadsNextPageAfterDebounce() async {
+    func fetchNextPageWaitsForTheDebounceInterval() async {
+        let clock = TestClock()
         let store = makeStore(firstPageLoaded()) {
+            $0.continuousClock = clock
             $0.booksClient.fetchBooks = fetchBooks(.success(PagedBooks(books: [newBook], totalItems: 40)))
         }
 
         await store.send(.fetchNextPage)
-        await store.receive(\.fetchBooks) {
+        // Exhaustive store: a fetch before the interval ends would fail the test.
+        await clock.advance(by: .milliseconds(499))
+        await clock.advance(by: .milliseconds(1))
+        // The debounce must follow the test clock, not wall-clock time.
+        await store.receive(\.fetchBooks, timeout: .milliseconds(100)) {
             $0.isLoadingNextPage = true
         }
         await store.receive(\.booksResponse) {
@@ -156,6 +162,33 @@ struct BookListTests {
             $0.pagesLoaded = 2
             $0.isLoadingNextPage = false
         }
+    }
+
+    @Test
+    func rapidFetchNextPageCallsLoadOnlyOnce() async {
+        let clock = TestClock()
+        let store = makeStore(firstPageLoaded()) {
+            $0.continuousClock = clock
+            $0.booksClient.fetchBooks = fetchBooks(.success(PagedBooks(books: [newBook], totalItems: 40)))
+        }
+
+        // Several cards appear while scrolling; each restarts the debounce.
+        await store.send(.fetchNextPage)
+        await clock.advance(by: .milliseconds(300))
+        await store.send(.fetchNextPage)
+        await clock.advance(by: .milliseconds(300))
+        await store.send(.fetchNextPage)
+        await clock.advance(by: .milliseconds(500))
+
+        await store.receive(\.fetchBooks, timeout: .milliseconds(100)) {
+            $0.isLoadingNextPage = true
+        }
+        await store.receive(\.booksResponse) {
+            $0.books = .loaded(Book.fixtures + [self.newBook])
+            $0.pagesLoaded = 2
+            $0.isLoadingNextPage = false
+        }
+        #expect(fetchBooksCalls.value == [.init(query: "bestsellers", page: 1)])
     }
 
     @Test

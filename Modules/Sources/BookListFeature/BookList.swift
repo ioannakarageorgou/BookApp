@@ -100,6 +100,7 @@ public struct BookList {
 
     @Dependency(\.booksClient) var booksClient
     @Dependency(\.favoritesClient) var favoritesClient
+    @Dependency(\.continuousClock) var clock
 
     public init() {}
 
@@ -173,8 +174,12 @@ public struct BookList {
             case .fetchNextPage:
                 // After a failed page, wait for the user to tap Retry instead of retrying on every scroll.
                 guard !state.isLoadingNextPage, state.nextPageError == nil, state.hasMorePages else { return .none }
-                return .send(.fetchBooks(reset: false))
-                    .debounce(id: CancelID.fetchNextPageDebounce, for: 0.5, scheduler: DispatchQueue.main)
+                // Debounce: each call restarts the wait, so a burst of calls loads one page.
+                return .run { [clock] send in
+                    try await clock.sleep(for: .milliseconds(500))
+                    await send(.fetchBooks(reset: false))
+                }
+                .cancellable(id: CancelID.fetchNextPageDebounce, cancelInFlight: true)
 
                 // MARK: - Search & Categories
             case .searchSubmitted:
