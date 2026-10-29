@@ -1,3 +1,4 @@
+import BookDetailsFeature
 import BooksClient
 import ComposableArchitecture
 import FavoritesClient
@@ -5,21 +6,21 @@ import Foundation
 import Models
 
 @Reducer
-struct BookList {
+public struct BookList {
     @ObservableState
-    struct State: Equatable {
-        var books: Loading<[Book]> = .idle
-        @Presents var bookDetails: BookDetails.State?
+    public struct State: Equatable {
+        public var books: Loading<[Book]>
+        @Presents public var bookDetails: BookDetails.State?
 
         // MARK: - Search & Filters
-        var searchQuery: String = ""
-        var selectedCategory: Category = .all
+        public var searchQuery: String
+        public var selectedCategory: Category
 
         // MARK: - Pagination
-        var isLoadingNextPage = false
-        var totalItems: Int = 0
-        var currentPage = 0
-        var hasMorePages: Bool {
+        public var isLoadingNextPage: Bool
+        public var totalItems: Int
+        public var currentPage: Int
+        public var hasMorePages: Bool {
             switch books {
             case .loaded(let loadedBooks):
                 return loadedBooks.count < totalItems
@@ -29,17 +30,17 @@ struct BookList {
         }
 
         // MARK: - Favorites
-        var favoriteBooks: Loading<[Book]> = .idle
+        public var favoriteBooks: Loading<[Book]>
 
         // MARK: - Categories
-        enum Category: String, CaseIterable, Equatable {
+        public enum Category: String, CaseIterable, Equatable {
             case all = "All"
             case popular = "Popular"
             case fiction = "Fiction"
             case nonFiction = "Non-Fiction"
             case mystery = "Mystery"
 
-            var searchQuery: String {
+            public var searchQuery: String {
                 switch self {
                 case .all: return "bestsellers"
                 case .popular: return "bestsellers"
@@ -49,10 +50,30 @@ struct BookList {
                 }
             }
         }
+
+        public init(
+            books: Loading<[Book]> = .idle,
+            bookDetails: BookDetails.State? = nil,
+            searchQuery: String = "",
+            selectedCategory: Category = .all,
+            isLoadingNextPage: Bool = false,
+            totalItems: Int = 0,
+            currentPage: Int = 0,
+            favoriteBooks: Loading<[Book]> = .idle
+        ) {
+            self.books = books
+            self.bookDetails = bookDetails
+            self.searchQuery = searchQuery
+            self.selectedCategory = selectedCategory
+            self.isLoadingNextPage = isLoadingNextPage
+            self.totalItems = totalItems
+            self.currentPage = currentPage
+            self.favoriteBooks = favoriteBooks
+        }
     }
 
     @CasePathable
-    enum Action: BindableAction {
+    public enum Action: BindableAction {
         case binding(BindingAction<State>)
 
         // MARK: - Books
@@ -75,6 +96,8 @@ struct BookList {
 
     @Dependency(\.booksClient) var booksClient
     @Dependency(\.favoritesClient) var favoritesClient
+
+    public init() {}
 
     public var body: some ReducerOf<Self> {
         BindingReducer()

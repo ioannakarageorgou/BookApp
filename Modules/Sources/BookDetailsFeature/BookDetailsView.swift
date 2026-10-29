@@ -3,10 +3,14 @@ import Models
 import SharedUI
 import SwiftUI
 
-struct BookDetailsView: View {
+public struct BookDetailsView: View {
     let store: StoreOf<BookDetails>
 
-    var body: some View {
+    public init(store: StoreOf<BookDetails>) {
+        self.store = store
+    }
+
+    public var body: some View {
         WithPerceptionTracking {
             VStack(alignment: .leading, spacing: AppLayout.Spacing.medium) {
                 switch store.bookDetails {
@@ -149,5 +153,16 @@ private extension BookDetailsView {
             .background(Theme.backgroundSecondary)
             .cornerRadius(AppLayout.CornerRadius.medium)
             .shadow(color: Color.black.opacity(0.1), radius: AppLayout.CornerRadius.small, x: 0, y: 2)
+    }
+}
+
+// Previews use the clients' preview values: fixture books and an in-memory shelf.
+#Preview {
+    NavigationStack {
+        BookDetailsView(
+            store: Store(initialState: BookDetails.State(bookId: "1")) {
+                BookDetails()
+            }
+        )
     }
 }

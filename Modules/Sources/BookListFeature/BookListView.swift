@@ -1,12 +1,17 @@
+import BookDetailsFeature
 import ComposableArchitecture
 import Models
 import SharedUI
 import SwiftUI
 
-struct BookListView: View {
+public struct BookListView: View {
     @Bindable var store: StoreOf<BookList>
 
-    var body: some View {
+    public init(store: StoreOf<BookList>) {
+        self.store = store
+    }
+
+    public var body: some View {
         NavigationStack {
             ZStack {
                 Theme.background.ignoresSafeArea()
@@ -253,4 +258,13 @@ private extension BookListView {
             store.send(.fetchNextPage)
         }
     }
+}
+
+// Previews use the clients' preview values: fixture books and an in-memory shelf.
+#Preview {
+    BookListView(
+        store: Store(initialState: BookList.State()) {
+            BookList()
+        }
+    )
 }

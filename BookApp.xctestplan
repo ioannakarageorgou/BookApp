@@ -77,6 +77,20 @@
         "identifier" : "FavoritesClientTests",
         "name" : "FavoritesClientTests"
       }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Modules",
+        "identifier" : "BookListFeatureTests",
+        "name" : "BookListFeatureTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Modules",
+        "identifier" : "BookDetailsFeatureTests",
+        "name" : "BookDetailsFeatureTests"
+      }
     }
   ],
   "version" : 1

@@ -3,7 +3,7 @@ import ComposableArchitecture
 import FavoritesClient
 import Models
 import Testing
-@testable import BookApp
+@testable import BookDetailsFeature
 
 @MainActor
 @Suite

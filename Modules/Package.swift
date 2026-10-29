@@ -12,6 +12,8 @@ let package = Package(
     name: "Modules",
     platforms: [.iOS(.v26)],
     products: [
+        .library(name: "BookListFeature", targets: ["BookListFeature"]),
+        .library(name: "BookDetailsFeature", targets: ["BookDetailsFeature"]),
         .library(name: "Models", targets: ["Models"]),
         .library(name: "BooksClient", targets: ["BooksClient"]),
         .library(name: "BooksClientLive", targets: ["BooksClientLive"]),
@@ -22,11 +24,58 @@ let package = Package(
     ],
     dependencies: [
         .package(path: "../NetworkClient"),
+        .package(url: "https://github.com/pointfreeco/swift-composable-architecture", from: "1.26.2"),
         .package(url: "https://github.com/pointfreeco/swift-dependencies", from: "1.9.0"),
         .package(url: "https://github.com/realm/realm-swift", from: "20.0.6"),
         .package(url: "https://github.com/pointfreeco/swift-snapshot-testing", from: "1.19.0"),
     ],
     targets: [
+        // MARK: - Features (depend on client interfaces only)
+
+        .target(
+            name: "BookListFeature",
+            dependencies: [
+                "BookDetailsFeature",
+                "BooksClient",
+                "FavoritesClient",
+                "Models",
+                "SharedUI",
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+            ]
+        ),
+        .testTarget(
+            name: "BookListFeatureTests",
+            dependencies: [
+                "BookDetailsFeature",
+                "BookListFeature",
+                "BooksClient",
+                "FavoritesClient",
+                "Models",
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+            ]
+        ),
+
+        .target(
+            name: "BookDetailsFeature",
+            dependencies: [
+                "BooksClient",
+                "FavoritesClient",
+                "Models",
+                "SharedUI",
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+            ]
+        ),
+        .testTarget(
+            name: "BookDetailsFeatureTests",
+            dependencies: [
+                "BookDetailsFeature",
+                "BooksClient",
+                "FavoritesClient",
+                "Models",
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+            ]
+        ),
+
         // MARK: - Models
 
         .target(name: "Models"),

@@ -7,13 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0BA5EC0F1A2B3C4D5E6F7090 /* Models in Frameworks */ = {isa = PBXBuildFile; productRef = 0BA5EC0F1A2B3C4D5E6F7091 /* Models */; };
+		0BA5EC0F1A2B3C4D5E6F70A0 /* BookListFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 0BA5EC0F1A2B3C4D5E6F70A1 /* BookListFeature */; };
+		015EC5092DFB19870029F87C /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 015EC5082DFB19870029F87C /* ComposableArchitecture */; };
 		0BA5EC0F1A2B3C4D5E6F7092 /* BooksClient in Frameworks */ = {isa = PBXBuildFile; productRef = 0BA5EC0F1A2B3C4D5E6F7093 /* BooksClient */; };
 		0BA5EC0F1A2B3C4D5E6F7094 /* BooksClientLive in Frameworks */ = {isa = PBXBuildFile; productRef = 0BA5EC0F1A2B3C4D5E6F7095 /* BooksClientLive */; };
 		0BA5EC0F1A2B3C4D5E6F7096 /* FavoritesClient in Frameworks */ = {isa = PBXBuildFile; productRef = 0BA5EC0F1A2B3C4D5E6F7097 /* FavoritesClient */; };
 		0BA5EC0F1A2B3C4D5E6F7098 /* FavoritesClientLive in Frameworks */ = {isa = PBXBuildFile; productRef = 0BA5EC0F1A2B3C4D5E6F7099 /* FavoritesClientLive */; };
-		012F98582E04422200F37FA6 /* SharedUI in Frameworks */ = {isa = PBXBuildFile; productRef = 012F98572E04422200F37FA6 /* SharedUI */; };
-		015EC5092DFB19870029F87C /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 015EC5082DFB19870029F87C /* ComposableArchitecture */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -70,13 +69,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				012F98582E04422200F37FA6 /* SharedUI in Frameworks */,
-				0BA5EC0F1A2B3C4D5E6F7090 /* Models in Frameworks */,
 				0BA5EC0F1A2B3C4D5E6F7092 /* BooksClient in Frameworks */,
 				0BA5EC0F1A2B3C4D5E6F7094 /* BooksClientLive in Frameworks */,
 				0BA5EC0F1A2B3C4D5E6F7096 /* FavoritesClient in Frameworks */,
 				0BA5EC0F1A2B3C4D5E6F7098 /* FavoritesClientLive in Frameworks */,
 				015EC5092DFB19870029F87C /* ComposableArchitecture in Frameworks */,
+				0BA5EC0F1A2B3C4D5E6F70A0 /* BookListFeature in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -162,8 +160,7 @@
 			name = BookApp;
 			packageProductDependencies = (
 				015EC5082DFB19870029F87C /* ComposableArchitecture */,
-				012F98572E04422200F37FA6 /* SharedUI */,
-				0BA5EC0F1A2B3C4D5E6F7091 /* Models */,
+				0BA5EC0F1A2B3C4D5E6F70A1 /* BookListFeature */,
 				0BA5EC0F1A2B3C4D5E6F7093 /* BooksClient */,
 				0BA5EC0F1A2B3C4D5E6F7095 /* BooksClientLive */,
 				0BA5EC0F1A2B3C4D5E6F7097 /* FavoritesClient */,
@@ -532,18 +529,10 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		012F98572E04422200F37FA6 /* SharedUI */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = SharedUI;
-		};
 		015EC5082DFB19870029F87C /* ComposableArchitecture */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 015EC5072DFB19870029F87C /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
 			productName = ComposableArchitecture;
-		};
-		0BA5EC0F1A2B3C4D5E6F7091 /* Models */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = Models;
 		};
 		0BA5EC0F1A2B3C4D5E6F7093 /* BooksClient */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -560,6 +549,10 @@
 		0BA5EC0F1A2B3C4D5E6F7099 /* FavoritesClientLive */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = FavoritesClientLive;
+		};
+		0BA5EC0F1A2B3C4D5E6F70A1 /* BookListFeature */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = BookListFeature;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

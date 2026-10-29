@@ -133,6 +133,34 @@
                ReferencedContainer = "container:Modules">
             </BuildableReference>
          </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "NO"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "BookListFeatureTests"
+               BuildableName = "BookListFeatureTests"
+               BlueprintName = "BookListFeatureTests"
+               ReferencedContainer = "container:Modules">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "NO"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "BookDetailsFeatureTests"
+               BuildableName = "BookDetailsFeatureTests"
+               BlueprintName = "BookDetailsFeatureTests"
+               ReferencedContainer = "container:Modules">
+            </BuildableReference>
+         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction

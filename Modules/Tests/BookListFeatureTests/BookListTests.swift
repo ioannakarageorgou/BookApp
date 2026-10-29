@@ -1,10 +1,11 @@
+import BookDetailsFeature
 import BooksClient
 import ComposableArchitecture
 import FavoritesClient
 import Foundation
 import Models
 import Testing
-@testable import BookApp
+@testable import BookListFeature
 
 @MainActor
 @Suite
