@@ -126,7 +126,7 @@ public struct BookList {
                     query = state.selectedCategory.searchQuery
                 }
 
-                return .run { send in
+                return .run { [booksClient] send in
                     do {
                         let pagedBooks = try await booksClient.fetchBooks(query: query, page: page)
                         await send(.booksResponse(.success(pagedBooks)))
@@ -182,7 +182,7 @@ public struct BookList {
                 // MARK: - Favorites
             case .loadFavorites:
                 state.favoriteBooks = .loading
-                return .run { send in
+                return .run { [favoritesClient] send in
                     do {
                         let favorites = try favoritesClient.favorites()
                         await send(.favoritesResponse(.success(favorites)))

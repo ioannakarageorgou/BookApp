@@ -2,7 +2,9 @@
 ///
 /// The client knows nothing about a specific API: the base URL and anything added to every
 /// request, such as an API key, come from a `NetworkClientConfiguration`.
-public protocol NetworkClient {
+///
+/// Clients are shared across tasks (for example from TCA effects), so they must be `Sendable`.
+public protocol NetworkClient: Sendable {
     func send<T: Request>(_ request: T) async throws -> T.Response
 }
 

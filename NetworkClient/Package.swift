@@ -26,5 +26,5 @@ let package = Package(
             dependencies: ["NetworkClient", "NetworkClientTestSupport"]
         ),
     ],
-    swiftLanguageModes: [.v5]
+    swiftLanguageModes: [.v6]
 )

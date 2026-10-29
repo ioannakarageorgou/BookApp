@@ -114,7 +114,7 @@ struct BooksClientLiveTests {
 
     // MARK: - Helpers
 
-    private func makeClient(handler: @escaping (any Request) throws -> Any) -> BooksClient {
+    private func makeClient(handler: @escaping @Sendable (any Request) throws -> Any) -> BooksClient {
         .live(networkClient: MockNetworkClient(handler: handler))
     }
 

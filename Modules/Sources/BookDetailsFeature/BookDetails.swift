@@ -35,7 +35,7 @@ public struct BookDetails {
             switch action {
             case .fetchDetails:
                 state.bookDetails = .loading
-                return .run { [bookId = state.bookId] send in
+                return .run { [bookId = state.bookId, booksClient] send in
                     do {
                         let details = try await booksClient.fetchBookDetails(id: bookId)
                         await send(.bookDetailsResponse(.success(details)))

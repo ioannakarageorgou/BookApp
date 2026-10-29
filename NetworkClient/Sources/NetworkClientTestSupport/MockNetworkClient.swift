@@ -1,10 +1,11 @@
 import Foundation
 import NetworkClient
 
+/// Returns whatever `handler` returns for each request. Immutable, so it's safe to share.
 public final class MockNetworkClient: NetworkClient {
-    public var handler: ((any Request) throws -> Any)?
+    public let handler: (@Sendable (any Request) throws -> Any)?
 
-    public init(handler: ((any Request) throws -> Any)? = nil) {
+    public init(handler: (@Sendable (any Request) throws -> Any)? = nil) {
         self.handler = handler
     }
 

@@ -32,7 +32,7 @@ struct MockNetworkClientTests {
 
     @Test(arguments: [false, true])
     func throwsWhenNoMatchingResponseIsConfigured(hasHandler: Bool) async {
-        let client = MockNetworkClient(handler: hasHandler ? { _ in "wrong type" } : nil)
+        let client = MockNetworkClient(handler: hasHandler ? { @Sendable _ in "wrong type" } : nil)
 
         let error = await #expect(throws: NetworkError.self) {
             try await client.send(MockRequest())

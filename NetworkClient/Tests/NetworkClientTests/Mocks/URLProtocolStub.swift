@@ -3,6 +3,8 @@ import Testing
 
 /// Answers every request made through `URLSession.stubbed()` with `handler`.
 final class URLProtocolStub: URLProtocol {
+    /// `URLSession` creates protocol instances itself, so the stub needs a static hook.
+    /// Safe because it's only set by suites nested in `StubbedNetworkTests`, which run serially.
     nonisolated(unsafe) static var handler: ((URLRequest) throws -> (HTTPURLResponse, Data))?
 
     override class func canInit(with request: URLRequest) -> Bool {
