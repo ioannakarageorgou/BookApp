@@ -1,6 +1,14 @@
+import ComposableArchitecture
 @testable import BookApp
 
-final class MockBooksRepository: BooksRepositoryProviding {
+/// Returns the configured results and records every call.
+/// Calling a method whose result isn't configured reports a test issue instead of crashing.
+final class MockBooksRepository: BooksRepositoryProviding, @unchecked Sendable {
+    struct FetchBooksCall: Equatable {
+        let query: String
+        let page: Int
+    }
+
     var fetchBooksResult: Result<PagedBooks, Error>?
     var fetchBookDetailsResult: Result<Details, Error>?
     var addToFavoritesResult: Result<Void, Error>?
@@ -8,64 +16,48 @@ final class MockBooksRepository: BooksRepositoryProviding {
     var getFavoriteBooksResult: Result<[Book], Error>?
     var isFavoriteResult: Bool?
 
+    let fetchBooksCalls = LockIsolated<[FetchBooksCall]>([])
+    let fetchBookDetailsCalls = LockIsolated<[String]>([])
+    let addedToFavorites = LockIsolated<[Book]>([])
+    let removedFromFavorites = LockIsolated<[Book]>([])
+
     func fetchBooks(query: String, page: Int) async throws -> PagedBooks {
-        guard let result = fetchBooksResult else {
-            fatalError("fetchBooksResult not set in MockBooksRepository")
-        }
-        switch result {
-        case .success(let pagedBooks): return pagedBooks
-        case .failure(let error): throw error
-        }
+        fetchBooksCalls.withValue { $0.append(FetchBooksCall(query: query, page: page)) }
+        return try value(of: fetchBooksResult, for: "fetchBooks")
     }
 
     func fetchBookDetails(id: String) async throws -> Details {
-        guard let result = fetchBookDetailsResult else {
-            fatalError("fetchBookDetailsResult not set in MockBooksRepository")
-        }
-        switch result {
-        case .success(let details): return details
-        case .failure(let error): throw error
-        }
+        fetchBookDetailsCalls.withValue { $0.append(id) }
+        return try value(of: fetchBookDetailsResult, for: "fetchBookDetails")
     }
 
     func addToFavorites(_ book: Book) throws {
-        guard let result = addToFavoritesResult else {
-            fatalError("addToFavoritesResult not set in MockBooksRepository")
-        }
-        switch result {
-        case .success:
-            return
-        case .failure(let error):
-            throw error
-        }
+        addedToFavorites.withValue { $0.append(book) }
+        try value(of: addToFavoritesResult, for: "addToFavorites")
     }
 
     func removeFromFavorites(_ book: Book) throws {
-        guard let result = removeFromFavoritesResult else {
-            fatalError("removeFromFavoritesResult not set in MockBooksRepository")
-        }
-        switch result {
-        case .success:
-            return
-        case .failure(let error):
-            throw error
-        }
+        removedFromFavorites.withValue { $0.append(book) }
+        try value(of: removeFromFavoritesResult, for: "removeFromFavorites")
     }
 
     func getFavoriteBooks() throws -> [Book] {
-        guard let result = getFavoriteBooksResult else {
-            fatalError("getFavoriteBooksResult not set in MockBooksRepository")
-        }
-        switch result {
-        case .success(let books): return books
-        case .failure(let error): throw error
-        }
+        try value(of: getFavoriteBooksResult, for: "getFavoriteBooks")
     }
 
     func isFavorite(_ book: Book) -> Bool {
-        guard let isFav = isFavoriteResult else {
-            fatalError("isFavoriteResult not set in MockBooksRepository")
+        guard let isFavoriteResult else {
+            reportIssue("MockBooksRepository.isFavorite called without isFavoriteResult")
+            return false
         }
-        return isFav
+        return isFavoriteResult
+    }
+
+    private func value<T>(of result: Result<T, Error>?, for method: String) throws -> T {
+        guard let result else {
+            reportIssue("MockBooksRepository.\(method) called without a configured result")
+            throw TestError.someError
+        }
+        return try result.get()
     }
 }

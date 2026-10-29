@@ -1,176 +1,197 @@
-import XCTest
 import BookAPIClient
+import ComposableArchitecture
+import Foundation
 import NetworkClient
 import RealmSwift
+import Testing
 @testable import BookApp
 
-final class BooksRepositoryTests: XCTestCase {
-    override func setUp() {
-        super.setUp()
-        var config = Realm.Configuration()
-        config.inMemoryIdentifier = self.name // isolates by test method
-        Realm.Configuration.defaultConfiguration = config
+/// Serialized because each test swaps Realm's global default configuration.
+@Suite(.serialized)
+struct BooksRepositoryTests {
+    /// Keeps the in-memory Realm alive for the whole test; it is discarded once no instance is open.
+    let realm: Realm
+
+    init() throws {
+        Realm.Configuration.defaultConfiguration = Realm.Configuration(inMemoryIdentifier: UUID().uuidString)
+        realm = try Realm()
     }
 
     // MARK: - Network
 
-    func testFetchBooks_success_returnsMappedBooks() async throws {
-        let mockResponse = GoogleBooksResponse(totalItems: 5, items: [
-            Volume(
-                id: "book1",
-                volumeInfo: VolumeInfo(
-                    title: "Test Driven Development",
-                    authors: ["Kent Beck"],
-                    publisher: "Addison-Wesley",
-                    publishedDate: "2002",
-                    description: "A book about TDD.",
-                    imageLinks: ImageLinks(thumbnail: nil)
-                )
-            )
-        ])
-        let mockClient = MockNetworkClient { request in
-            XCTAssertTrue(request is FetchBooksRequest)
-            return mockResponse
+    @Test
+    func fetchBooksMapsVolumesAndTotal() async throws {
+        let repository = makeRepository { _ in
+            GoogleBooksResponse(totalItems: 5, items: [Self.volume(id: "book1", title: "Test Driven Development")])
         }
-        let repository = BooksRepository(networkClient: mockClient)
 
-        let paged = try await repository.fetchBooks(query: "Swift", page: 0)
+        let paged = try await repository.fetchBooks(query: "tdd", page: 0)
 
-        XCTAssertEqual(paged.books.count, 1)
-        XCTAssertEqual(paged.totalItems, 5)
-        XCTAssertEqual(paged.books.first?.id, "book1")
-        XCTAssertEqual(paged.books.first?.title, "Test Driven Development")
+        #expect(paged.totalItems == 5)
+        #expect(paged.books.map(\.id) == ["book1"])
+        #expect(paged.books.first?.title == "Test Driven Development")
     }
 
-    func testFetchBooks_networkError_throws() async {
-        let mockClient = MockNetworkClient { _ in
-            throw NetworkError.httpError(404)
+    @Test
+    func fetchBooksRequestsPageOffsetOfTwenty() async throws {
+        let sent = LockIsolated<FetchBooksRequest?>(nil)
+        let repository = makeRepository { request in
+            sent.setValue(request as? FetchBooksRequest)
+            return GoogleBooksResponse(totalItems: 0, items: nil)
         }
-        let repository = BooksRepository(networkClient: mockClient)
 
-        do {
-            _ = try await repository.fetchBooks(query: "invalid", page: 0)
-            XCTFail("Expected error to be thrown")
-        } catch let error as NetworkError {
-            switch error {
-            case .httpError(let code):
-                XCTAssertEqual(code, 404)
-            default:
-                XCTFail("Expected .httpError, got \(error)")
-            }
-        } catch {
-            XCTFail("Unexpected error: \(error)")
+        _ = try await repository.fetchBooks(query: "swift", page: 2)
+
+        let request = try #require(sent.value)
+        #expect(request.query == "swift")
+        #expect(request.startIndex == 40)
+        #expect(request.maxResults == 20)
+    }
+
+    @Test
+    func fetchBooksReturnsNoBooksWhenItemsAreMissing() async throws {
+        let repository = makeRepository { _ in GoogleBooksResponse(totalItems: 0, items: nil) }
+
+        let paged = try await repository.fetchBooks(query: "nothing", page: 0)
+
+        #expect(paged == PagedBooks(books: [], totalItems: 0))
+    }
+
+    @Test
+    func fetchBooksPropagatesNetworkErrors() async {
+        let repository = makeRepository { _ in throw NetworkError.httpError(404) }
+
+        let error = await #expect(throws: NetworkError.self) {
+            try await repository.fetchBooks(query: "swift", page: 0)
+        }
+
+        guard case .httpError(404) = error else {
+            Issue.record("Expected .httpError(404), got \(String(describing: error))")
+            return
         }
     }
 
-    func testFetchBooks_emptyResponse_returnsEmptyArray() async throws {
-        let mockResponse = GoogleBooksResponse(totalItems: 0, items: [])
-        let mockClient = MockNetworkClient { _ in
-            return mockResponse
+    @Test
+    func fetchBookDetailsRequestsVolumeAndMapsIt() async throws {
+        let sent = LockIsolated<FetchBookDetailsRequest?>(nil)
+        let repository = makeRepository { request in
+            sent.setValue(request as? FetchBookDetailsRequest)
+            return Self.volume(id: "book1", title: "Refactoring", authors: ["Martin Fowler"], publisher: "Addison-Wesley")
         }
-        let repository = BooksRepository(networkClient: mockClient)
-
-        let result = try await repository.fetchBooks(query: "Swift", page: 0)
-
-        XCTAssertTrue(result.books.isEmpty)
-        XCTAssertEqual(result.totalItems, 0)
-    }
-
-    func testFetchBookDetails_success_returnsDetails() async throws {
-        let mockVolume = Volume(
-            id: "book1",
-            volumeInfo: VolumeInfo(
-                title: "Test Driven Development",
-                authors: ["Kent Beck"],
-                publisher: "Addison-Wesley",
-                publishedDate: "2002",
-                description: "A book about TDD.",
-                imageLinks: ImageLinks(thumbnail: nil)
-            )
-        )
-        let mockClient = MockNetworkClient { request in
-            XCTAssertTrue(request is FetchBookDetailsRequest)
-            return mockVolume
-        }
-        let repository = BooksRepository(networkClient: mockClient)
 
         let details = try await repository.fetchBookDetails(id: "book1")
 
-        XCTAssertEqual(details.core.id, "book1")
-        XCTAssertEqual(details.publisher, "Addison-Wesley")
+        #expect(sent.value?.bookID == "book1")
+        #expect(details.core.id == "book1")
+        #expect(details.authors == ["Martin Fowler"])
+        #expect(details.publisher == "Addison-Wesley")
     }
 
-    func testFetchBookDetails_networkError_throws() async {
-        let mockClient = MockNetworkClient { _ in
-            throw NetworkError.invalidURL
-        }
-        let repository = BooksRepository(networkClient: mockClient)
+    // MARK: - Mapping
 
-        do {
-            _ = try await repository.fetchBookDetails(id: "fail")
-            XCTFail("Expected error")
-        } catch let error as NetworkError {
-            switch error {
-            case .invalidURL:
-                // this is what we expected
-                break
-            default:
-                XCTFail("Expected .invalidURL, got \(error)")
-            }
-        } catch {
-            XCTFail("Unexpected error: \(error)")
-        }
+    @Test
+    func subtitleListsAuthors() {
+        let book = makeRepository().mapVolumeToBook(Self.volume(authors: ["Kent Beck", "Erich Gamma"], publisher: "Addison-Wesley"))
+
+        #expect(book.subtitle == "Kent Beck, Erich Gamma")
+    }
+
+    @Test
+    func subtitleFallsBackToPublisherThenDate() {
+        let repository = makeRepository()
+
+        #expect(repository.mapVolumeToBook(Self.volume(publisher: "O'Reilly", publishedDate: "2020")).subtitle == "O'Reilly")
+        #expect(repository.mapVolumeToBook(Self.volume(publishedDate: "2020")).subtitle == "2020")
+        #expect(repository.mapVolumeToBook(Self.volume()).subtitle == nil)
+    }
+
+    @Test
+    func thumbnailIsUpgradedToHTTPS() {
+        let book = makeRepository().mapVolumeToBook(Self.volume(thumbnail: "http://books.google.com/cover.jpg?id=1"))
+
+        #expect(book.thumbnailURL == URL(string: "https://books.google.com/cover.jpg?id=1"))
+    }
+
+    @Test
+    @MainActor
+    func detailsStripHTMLFromDescriptionAndDefaultAuthors() {
+        let details = makeRepository().mapVolumeToBookDetails(Self.volume(description: "<b>Bold</b> claims"))
+
+        #expect(details.description == "Bold claims")
+        #expect(details.authors == [])
     }
 
     // MARK: - Favorites
 
-    func testAddAndGetFavorites_success_roundTrip() throws {
-        let repository = BooksRepository(networkClient: MockNetworkClient())
-        let book = Book(id: "fav1", title: "Favorite Book")
+    @Test
+    func addedFavoriteIsReturnedWithAllFields() throws {
+        let repository = makeRepository()
+        let book = Book.fixture(id: "fav1")
 
         try repository.addToFavorites(book)
-        let favorites = try repository.getFavoriteBooks()
 
-        XCTAssertEqual(favorites.count, 1)
-        XCTAssertEqual(favorites.first?.id, "fav1")
+        #expect(try repository.getFavoriteBooks() == [book])
+        #expect(repository.isFavorite(book))
     }
 
-    func testIsFavorite_returnsTrueIfExists() throws {
-        let repository = BooksRepository(networkClient: MockNetworkClient())
-        let book = Book(id: "123", title: "TDD Book")
+    @Test
+    func addingTheSameFavoriteTwiceKeepsOneCopy() throws {
+        let repository = makeRepository()
+        let book = Book.fixture(id: "fav1")
 
         try repository.addToFavorites(book)
-        XCTAssertTrue(repository.isFavorite(book))
-    }
-
-    func testIsFavorite_returnsFalseIfNotExists() throws {
-        let repository = BooksRepository(networkClient: MockNetworkClient())
-        let book = Book(id: "nonexistent", title: "Missing Book")
-
-        XCTAssertFalse(repository.isFavorite(book))
-    }
-
-    func testRemoveFromFavorites_deletesCorrectly() throws {
-        let repository = BooksRepository(networkClient: MockNetworkClient())
-        let book = Book(id: "toDelete", title: "Remove Me")
-
         try repository.addToFavorites(book)
+
+        #expect(try repository.getFavoriteBooks() == [book])
+    }
+
+    @Test
+    func unknownBookIsNotFavorite() {
+        #expect(!makeRepository().isFavorite(Book.fixture(id: "nonexistent")))
+    }
+
+    @Test
+    func removedFavoriteIsGone() throws {
+        let repository = makeRepository()
+        let book = Book.fixture(id: "toDelete")
+        try repository.addToFavorites(book)
+
         try repository.removeFromFavorites(book)
 
-        XCTAssertFalse(repository.isFavorite(book))
+        #expect(!repository.isFavorite(book))
+        #expect(try repository.getFavoriteBooks().isEmpty)
     }
 
-    func testRemoveFromFavorites_doesNothingIfMissing() throws {
-        let repository = BooksRepository(networkClient: MockNetworkClient())
-        let book = Book(id: "ghost", title: "Ghost Book")
-
-        XCTAssertNoThrow(try repository.removeFromFavorites(book))
+    @Test
+    func removingUnknownFavoriteDoesNotThrow() throws {
+        try makeRepository().removeFromFavorites(Book.fixture(id: "ghost"))
     }
 
-    func testGetFavoriteBooks_emptyRealm_returnsEmpty() throws {
-        let repository = BooksRepository(networkClient: MockNetworkClient())
+    // MARK: - Helpers
 
-        let favorites = try repository.getFavoriteBooks()
-        XCTAssertTrue(favorites.isEmpty)
+    private func makeRepository(handler: ((any Request) throws -> Any)? = nil) -> BooksRepository {
+        BooksRepository(networkClient: MockNetworkClient(handler: handler))
+    }
+
+    private static func volume(
+        id: String = "id",
+        title: String = "Title",
+        authors: [String]? = nil,
+        publisher: String? = nil,
+        publishedDate: String? = nil,
+        description: String? = nil,
+        thumbnail: String? = nil
+    ) -> Volume {
+        Volume(
+            id: id,
+            volumeInfo: VolumeInfo(
+                title: title,
+                authors: authors,
+                publisher: publisher,
+                publishedDate: publishedDate,
+                description: description,
+                imageLinks: thumbnail.map { ImageLinks(thumbnail: $0) }
+            )
+        )
     }
 }
