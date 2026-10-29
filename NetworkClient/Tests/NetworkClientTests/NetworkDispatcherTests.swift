@@ -22,14 +22,12 @@ extension StubbedNetworkTests {
         func throwsHTTPErrorForNon2xxStatusCode() async {
             URLProtocolStub.handler = { _ in (.stub(statusCode: 500), Data()) }
 
-            await withKnownIssue("The dispatcher re-wraps .httpError as .unknown; fixed in Phase 3") {
-                let error = await #expect(throws: NetworkError.self) {
-                    try await dispatcher.send(request)
-                }
-                guard case .httpError(500) = error else {
-                    Issue.record("Expected .httpError(500), got \(String(describing: error))")
-                    return
-                }
+            let error = await #expect(throws: NetworkError.self) {
+                try await dispatcher.send(request)
+            }
+            guard case .httpError(500) = error else {
+                Issue.record("Expected .httpError(500), got \(String(describing: error))")
+                return
             }
         }
 
@@ -46,6 +44,16 @@ extension StubbedNetworkTests {
                 return
             }
             #expect(urlError.code == .notConnectedToInternet)
+        }
+
+        @Test
+        func reportsCancellationAsCancellationError() async {
+            // URLSession throws URLError(.cancelled) when its task is cancelled.
+            URLProtocolStub.handler = { _ in throw URLError(.cancelled) }
+
+            await #expect(throws: CancellationError.self) {
+                try await dispatcher.send(request)
+            }
         }
 
         @Test

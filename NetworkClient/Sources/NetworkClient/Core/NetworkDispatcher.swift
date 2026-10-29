@@ -1,37 +1,46 @@
 import Foundation
 
-/// Responsible for performing the actual network call using URLSession.
-/// Validates HTTP response status code (must be 2xx).
-/// Returns raw Data or throws NetworkError on failure.
+/// Performs the `URLSession` call and validates the HTTP status code.
+///
+/// Errors: transport failures become `.transportError`, non-2xx responses `.httpError`, and
+/// cancellation is reported as `CancellationError` rather than as a network failure.
 struct NetworkDispatcher {
     private let session: URLSession
 
-    public init(session: URLSession = .shared) {
+    init(session: URLSession = .shared) {
         self.session = session
     }
 
-    public func send(_ request: URLRequest) async throws -> Data {
+    func send(_ request: URLRequest) async throws -> Data {
+        let data: Data
+        let response: URLResponse
+        // Only the URLSession call is inside `do`, so errors thrown while validating the
+        // response below are never caught and re-wrapped by these handlers.
         do {
-            let (data, response) = try await session.data(for: request)
-
-            guard let httpResponse = response as? HTTPURLResponse else {
-                throw NetworkError.httpError(-1)
-            }
-
-            guard (200..<300).contains(httpResponse.statusCode) else {
-#if DEBUG
-                let errorBody = String(data: data, encoding: .utf8) ?? "<unreadable>"
-                print("🚨 HTTP Error \(httpResponse.statusCode)")
-                print("📄 Body: \(errorBody)")
-#endif
-                throw NetworkError.httpError(httpResponse.statusCode)
-            }
-
-            return data
-        } catch let urlError as URLError {
-            throw NetworkError.transportError(urlError)
+            (data, response) = try await session.data(for: request)
+        } catch let error as URLError where error.code == .cancelled {
+            throw CancellationError()
+        } catch let error as URLError {
+            throw NetworkError.transportError(error)
+        } catch let error as CancellationError {
+            throw error
         } catch {
             throw NetworkError.unknown(error)
         }
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw NetworkError.httpError(-1)
+        }
+
+        guard (200..<300).contains(httpResponse.statusCode) else {
+#if DEBUG
+            let errorBody = String(data: data, encoding: .utf8) ?? "<unreadable>"
+            print("🚨 HTTP Error \(httpResponse.statusCode)")
+            print("📄 Body: \(errorBody)")
+#endif
+            throw NetworkError.httpError(httpResponse.statusCode)
+        }
+
+        return data
     }
 }
