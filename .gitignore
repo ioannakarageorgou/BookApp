@@ -61,4 +61,4 @@ fastlane/Preview.html
 fastlane/screenshots/**/*.png
 fastlane/test_output
 
-BooksApp/Secrets/Secrets.plist
+Config/Secrets.xcconfig

@@ -2,7 +2,7 @@ public protocol NetworkClient {
     func send<T: Request>(_ request: T) async throws -> T.Response
 }
 
-public func makeLiveNetworkClient(apiKey: String) -> NetworkClient {
+public func makeLiveNetworkClient(apiKey: String? = nil) -> NetworkClient {
     return LiveNetworkClient(apiKey: apiKey)
 }
 

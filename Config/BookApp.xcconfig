@@ -1,0 +1,3 @@
+// Base configuration for the BookApp target.
+// Secrets.xcconfig is optional so fresh clones and CI build without a key.
+#include? "Secrets.xcconfig"
