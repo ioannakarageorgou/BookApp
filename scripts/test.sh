@@ -2,6 +2,7 @@
 # Runs every test target in BookApp.xctestplan, with code coverage, on the snapshot
 # reference simulator. Snapshots are recorded on iPhone 17 Pro / iOS 26.5; other iOS
 # versions render text differently. Extra arguments are passed to xcodebuild.
+# -skipMacroValidation trusts package macros (TCA, swift-dependencies) without an Xcode prompt.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -11,4 +12,5 @@ xcodebuild test \
   -workspace BookApp.xcworkspace \
   -scheme BookApp \
   -destination "$DESTINATION" \
+  -skipMacroValidation \
   "$@"

@@ -1,6 +1,7 @@
+#if DEBUG
 import Foundation
 
-extension Details {
+public extension Details {
     static func fixture(
         core: Book = .fixture(),
         description: String? = "This is a good description because it tells you about the book",
@@ -17,3 +18,4 @@ extension Details {
         )
     }
 }
+#endif

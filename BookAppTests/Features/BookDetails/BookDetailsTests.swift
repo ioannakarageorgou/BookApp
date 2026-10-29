@@ -1,18 +1,25 @@
+import BooksClient
 import ComposableArchitecture
+import FavoritesClient
+import Models
 import Testing
 @testable import BookApp
 
 @MainActor
 @Suite
 struct BookDetailsTests {
-    let repository = MockBooksRepository()
     let details = Details.fixture()
 
     @Test
     func fetchDetailsLoadsDetailsAndFavoriteState() async {
-        repository.fetchBookDetailsResult = .success(details)
-        repository.isFavoriteResult = true
-        let store = makeStore(BookDetails.State(bookId: details.core.id))
+        let requestedIDs = LockIsolated<[Book.ID]>([])
+        let store = makeStore(BookDetails.State(bookId: details.core.id)) { [details] in
+            $0.booksClient.fetchBookDetails = { id in
+                requestedIDs.withValue { $0.append(id) }
+                return details
+            }
+            $0.favoritesClient.isFavorite = { _ in true }
+        }
 
         await store.send(.fetchDetails) {
             $0.bookDetails = .loading
@@ -21,13 +28,14 @@ struct BookDetailsTests {
             $0.bookDetails = .loaded(self.details)
             $0.isFavorite = true
         }
-        #expect(repository.fetchBookDetailsCalls.value == [details.core.id])
+        #expect(requestedIDs.value == [details.core.id])
     }
 
     @Test
     func fetchDetailsFailureShowsError() async {
-        repository.fetchBookDetailsResult = .failure(TestError.someError)
-        let store = makeStore(BookDetails.State(bookId: "bad"))
+        let store = makeStore(BookDetails.State(bookId: "bad")) {
+            $0.booksClient.fetchBookDetails = { _ in throw TestError.someError }
+        }
 
         await store.send(.fetchDetails) {
             $0.bookDetails = .loading
@@ -39,40 +47,45 @@ struct BookDetailsTests {
 
     @Test
     func toggleFavoriteAddsBookToShelf() async {
-        repository.addToFavoritesResult = .success(())
-        let store = makeStore(loaded(isFavorite: false))
+        let added = LockIsolated<[Book]>([])
+        let store = makeStore(loaded(isFavorite: false)) {
+            $0.favoritesClient.add = { book in added.withValue { $0.append(book) } }
+        }
 
         await store.send(.toggleFavoriteTapped) {
             $0.isFavorite = true
         }
-        #expect(repository.addedToFavorites.value == [details.core])
+        #expect(added.value == [details.core])
     }
 
     @Test
     func toggleFavoriteRemovesBookFromShelf() async {
-        repository.removeFromFavoritesResult = .success(())
-        let store = makeStore(loaded(isFavorite: true))
+        let removedIDs = LockIsolated<[Book.ID]>([])
+        let store = makeStore(loaded(isFavorite: true)) {
+            $0.favoritesClient.remove = { id in removedIDs.withValue { $0.append(id) } }
+        }
 
         await store.send(.toggleFavoriteTapped) {
             $0.isFavorite = false
         }
-        #expect(repository.removedFromFavorites.value == [details.core])
+        #expect(removedIDs.value == [details.core.id])
     }
 
     @Test
     func toggleFavoriteKeepsStateWhenSavingFails() async {
-        repository.addToFavoritesResult = .failure(TestError.someError)
-        let store = makeStore(loaded(isFavorite: false))
+        let store = makeStore(loaded(isFavorite: false)) {
+            $0.favoritesClient.add = { _ in throw TestError.someError }
+        }
 
         await store.send(.toggleFavoriteTapped)
     }
 
     @Test
     func toggleFavoriteDoesNothingBeforeDetailsLoad() async {
+        // Any favoritesClient call would fail this test: none is configured.
         let store = makeStore(BookDetails.State(bookId: details.core.id))
 
         await store.send(.toggleFavoriteTapped)
-        #expect(repository.addedToFavorites.value.isEmpty)
     }
 
     // MARK: - Helpers
@@ -81,11 +94,15 @@ struct BookDetailsTests {
         BookDetails.State(bookId: details.core.id, bookDetails: .loaded(details), isFavorite: isFavorite)
     }
 
-    private func makeStore(_ state: BookDetails.State) -> TestStoreOf<BookDetails> {
+    /// Unconfigured client endpoints fail the test if they're called.
+    private func makeStore(
+        _ state: BookDetails.State,
+        dependencies: (inout DependencyValues) -> Void = { _ in }
+    ) -> TestStoreOf<BookDetails> {
         TestStore(initialState: state) {
             BookDetails()
-        } withDependencies: { [repository] in
-            $0.booksRepository = repository
+        } withDependencies: {
+            dependencies(&$0)
         }
     }
 }

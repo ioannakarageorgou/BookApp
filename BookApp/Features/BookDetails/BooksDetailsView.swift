@@ -1,6 +1,7 @@
-import SwiftUI
 import ComposableArchitecture
+import Models
 import SharedUI
+import SwiftUI
 
 struct BookDetailsView: View {
     let store: StoreOf<BookDetails>

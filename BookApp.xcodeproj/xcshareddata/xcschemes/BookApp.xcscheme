@@ -63,6 +63,76 @@
                ReferencedContainer = "container:Modules">
             </BuildableReference>
          </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "NO"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "ModelsTests"
+               BuildableName = "ModelsTests"
+               BlueprintName = "ModelsTests"
+               ReferencedContainer = "container:Modules">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "NO"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "BooksClientLiveTests"
+               BuildableName = "BooksClientLiveTests"
+               BlueprintName = "BooksClientLiveTests"
+               ReferencedContainer = "container:Modules">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "NO"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "FavoritesClientLiveTests"
+               BuildableName = "FavoritesClientLiveTests"
+               BlueprintName = "FavoritesClientLiveTests"
+               ReferencedContainer = "container:Modules">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "NO"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "BooksClientTests"
+               BuildableName = "BooksClientTests"
+               BlueprintName = "BooksClientTests"
+               ReferencedContainer = "container:Modules">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "NO"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "FavoritesClientTests"
+               BuildableName = "FavoritesClientTests"
+               BlueprintName = "FavoritesClientTests"
+               ReferencedContainer = "container:Modules">
+            </BuildableReference>
+         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction

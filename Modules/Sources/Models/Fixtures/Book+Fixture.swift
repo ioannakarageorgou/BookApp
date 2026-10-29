@@ -1,6 +1,7 @@
+#if DEBUG
 import Foundation
 
-extension Book {
+public extension Book {
     static func fixture(
         id: String = "1",
         title: String = "Sample Book",
@@ -23,3 +24,4 @@ extension Book {
         ]
     }
 }
+#endif

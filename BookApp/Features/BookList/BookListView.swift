@@ -1,6 +1,7 @@
-import SwiftUI
 import ComposableArchitecture
+import Models
 import SharedUI
+import SwiftUI
 
 struct BookListView: View {
     @Bindable var store: StoreOf<BookList>

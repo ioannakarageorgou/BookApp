@@ -1,5 +1,8 @@
-import Foundation
+import BooksClient
 import ComposableArchitecture
+import FavoritesClient
+import Foundation
+import Models
 
 @Reducer
 struct BookList {
@@ -70,7 +73,8 @@ struct BookList {
         case favoritesResponse(Result<[Book], Error>)
     }
 
-    @Dependency(\.booksRepository) var booksRepository
+    @Dependency(\.booksClient) var booksClient
+    @Dependency(\.favoritesClient) var favoritesClient
 
     public var body: some ReducerOf<Self> {
         BindingReducer()
@@ -101,7 +105,7 @@ struct BookList {
 
                 return .run { send in
                     do {
-                        let pagedBooks = try await booksRepository.fetchBooks(query: query, page: page)
+                        let pagedBooks = try await booksClient.fetchBooks(query: query, page: page)
                         await send(.booksResponse(.success(pagedBooks)))
                     } catch {
                         await send(.booksResponse(.failure(error)))
@@ -157,7 +161,7 @@ struct BookList {
                 state.favoriteBooks = .loading
                 return .run { send in
                     do {
-                        let favorites = try booksRepository.getFavoriteBooks()
+                        let favorites = try favoritesClient.favorites()
                         await send(.favoritesResponse(.success(favorites)))
                     } catch {
                         await send(.favoritesResponse(.failure(error)))

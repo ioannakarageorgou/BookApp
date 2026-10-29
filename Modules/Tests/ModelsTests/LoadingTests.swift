@@ -1,5 +1,5 @@
 import Testing
-@testable import BookApp
+import Models
 
 @Suite
 struct LoadingTests {

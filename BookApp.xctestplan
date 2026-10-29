@@ -42,6 +42,41 @@
         "identifier" : "SharedUITests",
         "name" : "SharedUITests"
       }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Modules",
+        "identifier" : "ModelsTests",
+        "name" : "ModelsTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Modules",
+        "identifier" : "BooksClientLiveTests",
+        "name" : "BooksClientLiveTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Modules",
+        "identifier" : "FavoritesClientLiveTests",
+        "name" : "FavoritesClientLiveTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Modules",
+        "identifier" : "BooksClientTests",
+        "name" : "BooksClientTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Modules",
+        "identifier" : "FavoritesClientTests",
+        "name" : "FavoritesClientTests"
+      }
     }
   ],
   "version" : 1

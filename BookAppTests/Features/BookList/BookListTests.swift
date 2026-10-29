@@ -1,20 +1,29 @@
+import BooksClient
 import ComposableArchitecture
+import FavoritesClient
 import Foundation
+import Models
 import Testing
 @testable import BookApp
 
 @MainActor
 @Suite
 struct BookListTests {
-    let repository = MockBooksRepository()
+    struct FetchBooksCall: Equatable {
+        let query: String
+        let page: Int
+    }
+
+    let fetchBooksCalls = LockIsolated<[FetchBooksCall]>([])
     let newBook = Book.fixture(id: "4", title: "Book Four")
 
     // MARK: - Fetching
 
     @Test
     func fetchBooksLoadsFirstPageOfSelectedCategory() async {
-        repository.fetchBooksResult = .success(PagedBooks(books: Book.fixtures, totalItems: 3))
-        let store = makeStore()
+        let store = makeStore {
+            $0.booksClient.fetchBooks = fetchBooks(.success(PagedBooks(books: Book.fixtures, totalItems: 3)))
+        }
 
         await store.send(.fetchBooks(reset: true)) {
             $0.books = .loading
@@ -24,13 +33,14 @@ struct BookListTests {
             $0.currentPage = 1
             $0.totalItems = 3
         }
-        #expect(repository.fetchBooksCalls.value == [.init(query: "bestsellers", page: 0)])
+        #expect(fetchBooksCalls.value == [.init(query: "bestsellers", page: 0)])
     }
 
     @Test
     func fetchBooksFailureShowsError() async {
-        repository.fetchBooksResult = .failure(TestError.someError)
-        let store = makeStore()
+        let store = makeStore {
+            $0.booksClient.fetchBooks = fetchBooks(.failure(TestError.someError))
+        }
 
         await store.send(.fetchBooks(reset: true)) {
             $0.books = .loading
@@ -43,14 +53,15 @@ struct BookListTests {
     @Test
     func nextPageAppendsOnlyBooksNotAlreadyLoaded() async {
         let duplicate = Book.fixtures[0]
-        repository.fetchBooksResult = .success(PagedBooks(books: [duplicate, newBook], totalItems: 40))
-        let store = makeStore(firstPageLoaded())
+        let store = makeStore(firstPageLoaded()) {
+            $0.booksClient.fetchBooks = fetchBooks(.success(PagedBooks(books: [duplicate, newBook], totalItems: 40)))
+        }
 
         await store.send(.fetchBooks(reset: false)) {
             $0.isLoadingNextPage = true
         }
         await store.receive(\.booksResponse) {
-            $0.books = .loaded(Book.fixtures + [newBook])
+            $0.books = .loaded(Book.fixtures + [self.newBook])
             $0.currentPage = 2
             $0.isLoadingNextPage = false
         }
@@ -58,26 +69,28 @@ struct BookListTests {
 
     @Test
     func nextPageRequestsThePageAfterTheLastLoadedOne() async {
-        repository.fetchBooksResult = .success(PagedBooks(books: [newBook], totalItems: 40))
-        let store = makeStore(firstPageLoaded())
+        let store = makeStore(firstPageLoaded()) {
+            $0.booksClient.fetchBooks = fetchBooks(.success(PagedBooks(books: [newBook], totalItems: 40)))
+        }
 
         await store.send(.fetchBooks(reset: false)) {
             $0.isLoadingNextPage = true
         }
         await store.receive(\.booksResponse) {
-            $0.books = .loaded(Book.fixtures + [newBook])
+            $0.books = .loaded(Book.fixtures + [self.newBook])
             $0.currentPage = 2
             $0.isLoadingNextPage = false
         }
         withKnownIssue("Requests page 2 after the first page, skipping results 21–40; fixed in Phase 3") {
-            #expect(repository.fetchBooksCalls.value == [.init(query: "bestsellers", page: 1)])
+            #expect(fetchBooksCalls.value == [.init(query: "bestsellers", page: 1)])
         }
     }
 
     @Test
     func nextPageFailureKeepsLoadedBooks() async {
-        repository.fetchBooksResult = .failure(TestError.someError)
-        let store = makeStore(firstPageLoaded())
+        let store = makeStore(firstPageLoaded()) {
+            $0.booksClient.fetchBooks = fetchBooks(.failure(TestError.someError))
+        }
 
         await store.send(.fetchBooks(reset: false)) {
             $0.isLoadingNextPage = true
@@ -93,15 +106,16 @@ struct BookListTests {
 
     @Test
     func fetchNextPageLoadsNextPageAfterDebounce() async {
-        repository.fetchBooksResult = .success(PagedBooks(books: [newBook], totalItems: 40))
-        let store = makeStore(firstPageLoaded())
+        let store = makeStore(firstPageLoaded()) {
+            $0.booksClient.fetchBooks = fetchBooks(.success(PagedBooks(books: [newBook], totalItems: 40)))
+        }
 
         await store.send(.fetchNextPage)
         await store.receive(\.fetchBooks) {
             $0.isLoadingNextPage = true
         }
         await store.receive(\.booksResponse) {
-            $0.books = .loaded(Book.fixtures + [newBook])
+            $0.books = .loaded(Book.fixtures + [self.newBook])
             $0.currentPage = 2
             $0.isLoadingNextPage = false
         }
@@ -112,7 +126,6 @@ struct BookListTests {
         let store = makeStore(firstPageLoaded(totalItems: Book.fixtures.count))
 
         await store.send(.fetchNextPage)
-        #expect(repository.fetchBooksCalls.value.isEmpty)
     }
 
     @Test
@@ -122,15 +135,15 @@ struct BookListTests {
         let store = makeStore(state)
 
         await store.send(.fetchNextPage)
-        #expect(repository.fetchBooksCalls.value.isEmpty)
     }
 
     // MARK: - Search & categories
 
     @Test
     func searchSubmittedFetchesTrimmedQuery() async {
-        repository.fetchBooksResult = .success(PagedBooks(books: Book.fixtures, totalItems: 3))
-        let store = makeStore()
+        let store = makeStore {
+            $0.booksClient.fetchBooks = fetchBooks(.success(PagedBooks(books: Book.fixtures, totalItems: 3)))
+        }
 
         await store.send(.binding(.set(\.searchQuery, "  swift  "))) {
             $0.searchQuery = "  swift  "
@@ -144,13 +157,14 @@ struct BookListTests {
             $0.currentPage = 1
             $0.totalItems = 3
         }
-        #expect(repository.fetchBooksCalls.value == [.init(query: "swift", page: 0)])
+        #expect(fetchBooksCalls.value == [.init(query: "swift", page: 0)])
     }
 
     @Test
     func blankSearchFallsBackToSelectedCategory() async {
-        repository.fetchBooksResult = .success(PagedBooks(books: [], totalItems: 0))
-        let store = makeStore(BookList.State(searchQuery: "   ", selectedCategory: .fiction))
+        let store = makeStore(BookList.State(searchQuery: "   ", selectedCategory: .fiction)) {
+            $0.booksClient.fetchBooks = fetchBooks(.success(PagedBooks(books: [], totalItems: 0)))
+        }
 
         await store.send(.searchSubmitted)
         await store.receive(\.fetchBooks) {
@@ -160,13 +174,14 @@ struct BookListTests {
             $0.books = .loaded([])
             $0.currentPage = 1
         }
-        #expect(repository.fetchBooksCalls.value == [.init(query: "fiction bestsellers", page: 0)])
+        #expect(fetchBooksCalls.value == [.init(query: "fiction bestsellers", page: 0)])
     }
 
     @Test
     func selectingCategoryClearsSearchAndFetchesCategory() async {
-        repository.fetchBooksResult = .success(PagedBooks(books: Book.fixtures, totalItems: 3))
-        let store = makeStore(BookList.State(searchQuery: "swift"))
+        let store = makeStore(BookList.State(searchQuery: "swift")) {
+            $0.booksClient.fetchBooks = fetchBooks(.success(PagedBooks(books: Book.fixtures, totalItems: 3)))
+        }
 
         await store.send(.categorySelected(.mystery)) {
             $0.selectedCategory = .mystery
@@ -180,7 +195,7 @@ struct BookListTests {
             $0.currentPage = 1
             $0.totalItems = 3
         }
-        #expect(repository.fetchBooksCalls.value == [.init(query: "mystery bestsellers", page: 0)])
+        #expect(fetchBooksCalls.value == [.init(query: "mystery bestsellers", page: 0)])
     }
 
     // MARK: - Navigation
@@ -207,8 +222,9 @@ struct BookListTests {
 
     @Test
     func loadFavoritesShowsSavedBooks() async {
-        repository.getFavoriteBooksResult = .success(Book.fixtures)
-        let store = makeStore()
+        let store = makeStore {
+            $0.favoritesClient.favorites = { Book.fixtures }
+        }
 
         await store.send(.loadFavorites) {
             $0.favoriteBooks = .loading
@@ -220,8 +236,9 @@ struct BookListTests {
 
     @Test
     func loadFavoritesFailureShowsError() async {
-        repository.getFavoriteBooksResult = .failure(TestError.someError)
-        let store = makeStore()
+        let store = makeStore {
+            $0.favoritesClient.favorites = { throw TestError.someError }
+        }
 
         await store.send(.loadFavorites) {
             $0.favoriteBooks = .loading
@@ -238,11 +255,23 @@ struct BookListTests {
         BookList.State(books: .loaded(Book.fixtures), totalItems: totalItems, currentPage: 1)
     }
 
-    private func makeStore(_ state: BookList.State = BookList.State()) -> TestStoreOf<BookList> {
+    /// A `fetchBooks` implementation that records each call and returns `result`.
+    private func fetchBooks(_ result: Result<PagedBooks, Error>) -> @Sendable (String, Int) async throws -> PagedBooks {
+        { [fetchBooksCalls] query, page in
+            fetchBooksCalls.withValue { $0.append(FetchBooksCall(query: query, page: page)) }
+            return try result.get()
+        }
+    }
+
+    /// Unconfigured client endpoints fail the test if they're called.
+    private func makeStore(
+        _ state: BookList.State = BookList.State(),
+        dependencies: (inout DependencyValues) -> Void = { _ in }
+    ) -> TestStoreOf<BookList> {
         TestStore(initialState: state) {
             BookList()
-        } withDependencies: { [repository] in
-            $0.booksRepository = repository
+        } withDependencies: {
+            dependencies(&$0)
         }
     }
 }

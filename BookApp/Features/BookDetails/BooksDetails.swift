@@ -1,5 +1,8 @@
-import Foundation
+import BooksClient
 import ComposableArchitecture
+import FavoritesClient
+import Foundation
+import Models
 
 @Reducer
 struct BookDetails {
@@ -16,7 +19,8 @@ struct BookDetails {
         case toggleFavoriteTapped
     }
 
-    @Dependency(\.booksRepository) var booksRepository
+    @Dependency(\.booksClient) var booksClient
+    @Dependency(\.favoritesClient) var favoritesClient
 
     func reduce(into state: inout State, action: Action) -> Effect<Action> {
         switch action {
@@ -24,7 +28,7 @@ struct BookDetails {
             state.bookDetails = .loading
             return .run { [bookId = state.bookId] send in
                 do {
-                    let details = try await booksRepository.fetchBookDetails(id: bookId)
+                    let details = try await booksClient.fetchBookDetails(id: bookId)
                     await send(.bookDetailsResponse(.success(details)))
                 } catch {
                     await send(.bookDetailsResponse(.failure(error)))
@@ -33,7 +37,7 @@ struct BookDetails {
 
         case let .bookDetailsResponse(.success(details)):
             state.bookDetails = .loaded(details)
-            state.isFavorite = booksRepository.isFavorite(details.core)
+            state.isFavorite = favoritesClient.isFavorite(id: details.core.id)
             return .none
 
         case let .bookDetailsResponse(.failure(error)):
@@ -46,10 +50,10 @@ struct BookDetails {
             }
             do {
                 if state.isFavorite {
-                    try booksRepository.removeFromFavorites(book)
+                    try favoritesClient.remove(id: book.id)
                     state.isFavorite = false
                 } else {
-                    try booksRepository.addToFavorites(book)
+                    try favoritesClient.add(book: book)
                     state.isFavorite = true
                 }
             } catch {

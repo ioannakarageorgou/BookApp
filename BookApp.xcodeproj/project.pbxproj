@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0BA5EC0F1A2B3C4D5E6F7090 /* Models in Frameworks */ = {isa = PBXBuildFile; productRef = 0BA5EC0F1A2B3C4D5E6F7091 /* Models */; };
+		0BA5EC0F1A2B3C4D5E6F7092 /* BooksClient in Frameworks */ = {isa = PBXBuildFile; productRef = 0BA5EC0F1A2B3C4D5E6F7093 /* BooksClient */; };
+		0BA5EC0F1A2B3C4D5E6F7094 /* BooksClientLive in Frameworks */ = {isa = PBXBuildFile; productRef = 0BA5EC0F1A2B3C4D5E6F7095 /* BooksClientLive */; };
+		0BA5EC0F1A2B3C4D5E6F7096 /* FavoritesClient in Frameworks */ = {isa = PBXBuildFile; productRef = 0BA5EC0F1A2B3C4D5E6F7097 /* FavoritesClient */; };
+		0BA5EC0F1A2B3C4D5E6F7098 /* FavoritesClientLive in Frameworks */ = {isa = PBXBuildFile; productRef = 0BA5EC0F1A2B3C4D5E6F7099 /* FavoritesClientLive */; };
 		012F98582E04422200F37FA6 /* SharedUI in Frameworks */ = {isa = PBXBuildFile; productRef = 012F98572E04422200F37FA6 /* SharedUI */; };
 		015EC5092DFB19870029F87C /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 015EC5082DFB19870029F87C /* ComposableArchitecture */; };
-		019AEB0A2E000A5700AE732F /* BookAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 019AEB092E000A5700AE732F /* BookAPIClient */; };
-		01D6E0B82E15559100E14ED4 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 01D6E0B72E15559100E14ED4 /* RealmSwift */; };
-		01E0E7802E291D0F00921F06 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 01E0E77F2E291D0F00921F06 /* RealmSwift */; };
-		01E0E7812E291D0F00921F06 /* RealmSwift in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 01E0E77F2E291D0F00921F06 /* RealmSwift */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		01F43F932DFC236C0001279E /* NetworkClient in Frameworks */ = {isa = PBXBuildFile; productRef = 01F43F922DFC236C0001279E /* NetworkClient */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -25,20 +25,6 @@
 			remoteInfo = BookApp;
 		};
 /* End PBXContainerItemProxy section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		01E0E7822E291D0F00921F06 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				01E0E7812E291D0F00921F06 /* RealmSwift in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		0186B6A02DFEF8C80024C08D /* BookAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BookAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -77,7 +63,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				01E0E7802E291D0F00921F06 /* RealmSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -85,10 +70,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				01F43F932DFC236C0001279E /* NetworkClient in Frameworks */,
 				012F98582E04422200F37FA6 /* SharedUI in Frameworks */,
-				019AEB0A2E000A5700AE732F /* BookAPIClient in Frameworks */,
-				01D6E0B82E15559100E14ED4 /* RealmSwift in Frameworks */,
+				0BA5EC0F1A2B3C4D5E6F7090 /* Models in Frameworks */,
+				0BA5EC0F1A2B3C4D5E6F7092 /* BooksClient in Frameworks */,
+				0BA5EC0F1A2B3C4D5E6F7094 /* BooksClientLive in Frameworks */,
+				0BA5EC0F1A2B3C4D5E6F7096 /* FavoritesClient in Frameworks */,
+				0BA5EC0F1A2B3C4D5E6F7098 /* FavoritesClientLive in Frameworks */,
 				015EC5092DFB19870029F87C /* ComposableArchitecture in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -141,7 +128,6 @@
 				0186B69C2DFEF8C80024C08D /* Sources */,
 				0186B69D2DFEF8C80024C08D /* Frameworks */,
 				0186B69E2DFEF8C80024C08D /* Resources */,
-				01E0E7822E291D0F00921F06 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -153,7 +139,6 @@
 			);
 			name = BookAppTests;
 			packageProductDependencies = (
-				01E0E77F2E291D0F00921F06 /* RealmSwift */,
 			);
 			productName = BookAppTests;
 			productReference = 0186B6A02DFEF8C80024C08D /* BookAppTests.xctest */;
@@ -177,10 +162,12 @@
 			name = BookApp;
 			packageProductDependencies = (
 				015EC5082DFB19870029F87C /* ComposableArchitecture */,
-				01F43F922DFC236C0001279E /* NetworkClient */,
-				019AEB092E000A5700AE732F /* BookAPIClient */,
 				012F98572E04422200F37FA6 /* SharedUI */,
-				01D6E0B72E15559100E14ED4 /* RealmSwift */,
+				0BA5EC0F1A2B3C4D5E6F7091 /* Models */,
+				0BA5EC0F1A2B3C4D5E6F7093 /* BooksClient */,
+				0BA5EC0F1A2B3C4D5E6F7095 /* BooksClientLive */,
+				0BA5EC0F1A2B3C4D5E6F7097 /* FavoritesClient */,
+				0BA5EC0F1A2B3C4D5E6F7099 /* FavoritesClientLive */,
 			);
 			productName = BookApp;
 			productReference = 0199F20F2DFB15750083EDEE /* BookApp.app */;
@@ -219,7 +206,6 @@
 				015EC5072DFB19870029F87C /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
 				01F43F912DFC236C0001279E /* XCLocalSwiftPackageReference "NetworkClient" */,
 				019AEB082E000A5700AE732F /* XCLocalSwiftPackageReference "Modules" */,
-				01D6E0B62E15559100E14ED4 /* XCRemoteSwiftPackageReference "realm-swift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 0199F2102DFB15750083EDEE /* Products */;
@@ -543,14 +529,6 @@
 				minimumVersion = 1.26.2;
 			};
 		};
-		01D6E0B62E15559100E14ED4 /* XCRemoteSwiftPackageReference "realm-swift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/realm/realm-swift";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 20.0.6;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -563,23 +541,25 @@
 			package = 015EC5072DFB19870029F87C /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
 			productName = ComposableArchitecture;
 		};
-		019AEB092E000A5700AE732F /* BookAPIClient */ = {
+		0BA5EC0F1A2B3C4D5E6F7091 /* Models */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = BookAPIClient;
+			productName = Models;
 		};
-		01D6E0B72E15559100E14ED4 /* RealmSwift */ = {
+		0BA5EC0F1A2B3C4D5E6F7093 /* BooksClient */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 01D6E0B62E15559100E14ED4 /* XCRemoteSwiftPackageReference "realm-swift" */;
-			productName = RealmSwift;
+			productName = BooksClient;
 		};
-		01E0E77F2E291D0F00921F06 /* RealmSwift */ = {
+		0BA5EC0F1A2B3C4D5E6F7095 /* BooksClientLive */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 01D6E0B62E15559100E14ED4 /* XCRemoteSwiftPackageReference "realm-swift" */;
-			productName = RealmSwift;
+			productName = BooksClientLive;
 		};
-		01F43F922DFC236C0001279E /* NetworkClient */ = {
+		0BA5EC0F1A2B3C4D5E6F7097 /* FavoritesClient */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = NetworkClient;
+			productName = FavoritesClient;
+		};
+		0BA5EC0F1A2B3C4D5E6F7099 /* FavoritesClientLive */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = FavoritesClientLive;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

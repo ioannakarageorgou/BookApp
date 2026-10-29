@@ -1,5 +1,5 @@
 import Testing
-@testable import BookApp
+@testable import BooksClientLive
 
 /// Main actor because the HTML importer behind `htmlToPlainString` must run on the main thread.
 @MainActor

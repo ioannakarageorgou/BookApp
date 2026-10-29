@@ -1,4 +1,4 @@
-import SwiftUI
+import UIKit
 
 extension String {
     var htmlToPlainString: String {
