@@ -1,12 +1,12 @@
 import SwiftUI
 
 /// A styled search bar with icon and optional clear button
-public struct SearchBar: View {
+package struct SearchBar: View {
     @Binding var text: String
     let placeholder: String
     let onSubmit: () -> Void
 
-    public init(
+    package init(
         text: Binding<String>,
         placeholder: String = "Search...",
         onSubmit: @escaping () -> Void = {}
@@ -16,7 +16,7 @@ public struct SearchBar: View {
         self.onSubmit = onSubmit
     }
 
-    public var body: some View {
+    package var body: some View {
         HStack(spacing: AppLayout.Spacing.small) {
             Image(systemName: "magnifyingglass")
                 .font(.system(size: AppLayout.ImageSize.iconSmall, weight: .medium))

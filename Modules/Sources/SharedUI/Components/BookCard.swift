@@ -1,13 +1,13 @@
 import SwiftUI
 
 /// A book card for grid display with cover, title, and subtitle
-public struct BookCard: View {
+package struct BookCard: View {
     let title: String
     let subtitle: String?
     let thumbnailURL: URL?
     let onTap: () -> Void
 
-    public init(
+    package init(
         title: String,
         subtitle: String?,
         thumbnailURL: URL?,
@@ -19,7 +19,7 @@ public struct BookCard: View {
         self.onTap = onTap
     }
 
-    public var body: some View {
+    package var body: some View {
         Button(action: onTap) {
             VStack(alignment: .leading, spacing: AppLayout.Spacing.small) {
                 // Cover image

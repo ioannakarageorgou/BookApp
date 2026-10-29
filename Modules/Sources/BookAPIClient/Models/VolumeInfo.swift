@@ -1,14 +1,14 @@
 import Foundation
 
-public struct VolumeInfo: Decodable, Equatable {
-    public let title: String
-    public let authors: [String]?
-    public let publisher: String?
-    public let publishedDate: String?
-    public let description: String?
-    public let imageLinks: ImageLinks?
+package struct VolumeInfo: Decodable, Equatable {
+    package let title: String
+    package let authors: [String]?
+    package let publisher: String?
+    package let publishedDate: String?
+    package let description: String?
+    package let imageLinks: ImageLinks?
 
-    public init(
+    package init(
         title: String,
         authors: [String]? = nil,
         publisher: String? = nil,
@@ -26,10 +26,10 @@ public struct VolumeInfo: Decodable, Equatable {
 
 }
 
-public struct ImageLinks: Decodable, Equatable {
-    public let thumbnail: String?
+package struct ImageLinks: Decodable, Equatable {
+    package let thumbnail: String?
 
-    public init(thumbnail: String?) {
+    package init(thumbnail: String?) {
         self.thumbnail = thumbnail
     }
 }

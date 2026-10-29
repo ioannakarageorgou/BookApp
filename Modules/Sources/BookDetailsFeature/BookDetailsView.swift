@@ -3,14 +3,14 @@ import Models
 import SharedUI
 import SwiftUI
 
-public struct BookDetailsView: View {
+package struct BookDetailsView: View {
     let store: StoreOf<BookDetails>
 
-    public init(store: StoreOf<BookDetails>) {
+    package init(store: StoreOf<BookDetails>) {
         self.store = store
     }
 
-    public var body: some View {
+    package var body: some View {
         WithPerceptionTracking {
             VStack(alignment: .leading, spacing: AppLayout.Spacing.medium) {
                 switch store.bookDetails {

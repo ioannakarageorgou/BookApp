@@ -1,14 +1,14 @@
 import Foundation
 import NetworkClient
 
-public struct FetchBookDetailsRequest: Request {
-    public typealias Response = Volume
+package struct FetchBookDetailsRequest: Request {
+    package typealias Response = Volume
 
-    public let bookID: String
+    package let bookID: String
 
-    public var path: String { "/books/v1/volumes/\(bookID)" }
+    package var path: String { "/books/v1/volumes/\(bookID)" }
 
-    public init(bookID: String) {
+    package init(bookID: String) {
         self.bookID = bookID
     }
 }

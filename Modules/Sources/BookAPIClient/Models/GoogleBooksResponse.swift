@@ -1,18 +1,18 @@
-public struct GoogleBooksResponse: Decodable, Equatable {
-    public let totalItems: Int
-    public let items: [Volume]?
+package struct GoogleBooksResponse: Decodable, Equatable {
+    package let totalItems: Int
+    package let items: [Volume]?
 
-    public init(totalItems: Int, items: [Volume]?) {
+    package init(totalItems: Int, items: [Volume]?) {
         self.totalItems = totalItems
         self.items = items
     }
 }
 
-public struct Volume: Decodable, Equatable {
-    public let id: String
-    public let volumeInfo: VolumeInfo
+package struct Volume: Decodable, Equatable {
+    package let id: String
+    package let volumeInfo: VolumeInfo
 
-    public init(id: String, volumeInfo: VolumeInfo) {
+    package init(id: String, volumeInfo: VolumeInfo) {
         self.id = id
         self.volumeInfo = volumeInfo
     }

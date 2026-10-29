@@ -1,12 +1,12 @@
 import SwiftUI
 
 /// A pill-shaped category tab button with selected state
-public struct CategoryTab: View {
+package struct CategoryTab: View {
     let title: String
     let isSelected: Bool
     let action: () -> Void
 
-    public init(
+    package init(
         title: String,
         isSelected: Bool,
         action: @escaping () -> Void
@@ -16,7 +16,7 @@ public struct CategoryTab: View {
         self.action = action
     }
 
-    public var body: some View {
+    package var body: some View {
         Button(action: action) {
             Text(title)
                 .font(.system(size: AppLayout.FontSize.footnote, weight: .semibold))

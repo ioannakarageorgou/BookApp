@@ -12,7 +12,7 @@ public struct BookDetails {
         public var bookDetails: Loading<Details>
         public var isFavorite: Bool
 
-        public init(bookId: String, bookDetails: Loading<Details> = .idle, isFavorite: Bool = false) {
+        package init(bookId: String, bookDetails: Loading<Details> = .idle, isFavorite: Bool = false) {
             self.bookId = bookId
             self.bookDetails = bookDetails
             self.isFavorite = isFavorite
@@ -28,7 +28,7 @@ public struct BookDetails {
     @Dependency(\.booksClient) var booksClient
     @Dependency(\.favoritesClient) var favoritesClient
 
-    public init() {}
+    package init() {}
 
     public var body: some ReducerOf<Self> {
         Reduce { state, action in

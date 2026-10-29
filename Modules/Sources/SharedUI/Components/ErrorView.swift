@@ -1,10 +1,10 @@
 import SwiftUI
 
-public struct ErrorView: View {
+package struct ErrorView: View {
     let message: String
     let onRetry: (() -> Void)?
 
-    public init(
+    package init(
         message: String = "Something went wrong. Please try again later.",
         onRetry: (() -> Void)? = nil
     ) {
@@ -12,7 +12,7 @@ public struct ErrorView: View {
         self.onRetry = onRetry
     }
 
-    public var body: some View {
+    package var body: some View {
         VStack(spacing: AppLayout.Spacing.medium) {
             Text("😕")
                 .font(.system(size: AppLayout.FontSize.largeTitle))

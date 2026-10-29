@@ -1,9 +1,8 @@
 import SwiftUI
 
 // MARK: - Shadow Helpers
-// Add this extension at the bottom of your Theme.swift file
 
-public extension View {
+package extension View {
     /// Small shadow for subtle elevation (buttons, small cards)
     func cardShadowSmall() -> some View {
         self.shadow(

@@ -1,11 +1,11 @@
 import SwiftUI
 
-public struct EmptyPlaceholderView: View {
+package struct EmptyPlaceholderView: View {
     let title: String
     let message: String?
     let icon: String
 
-    public init(
+    package init(
         title: String,
         message: String? = nil,
         icon: String = "book"
@@ -15,7 +15,7 @@ public struct EmptyPlaceholderView: View {
         self.icon = icon
     }
 
-    public var body: some View {
+    package var body: some View {
         VStack(spacing: AppLayout.Spacing.medium) {
             Image(systemName: icon)
                 .font(.system(size: AppLayout.FontSize.largeTitle, weight: .semibold))

@@ -1,13 +1,13 @@
 import SwiftUI
 
 /// A larger book card with heart badge for favorites section
-public struct FavoriteBookCard: View {
+package struct FavoriteBookCard: View {
     let title: String
     let subtitle: String?
     let thumbnailURL: URL?
     let onTap: () -> Void
 
-    public init(
+    package init(
         title: String,
         subtitle: String?,
         thumbnailURL: URL?,
@@ -19,7 +19,7 @@ public struct FavoriteBookCard: View {
         self.onTap = onTap
     }
 
-    public var body: some View {
+    package var body: some View {
         Button(action: onTap) {
             VStack(alignment: .leading, spacing: AppLayout.Spacing.small) {
                 // Cover with heart badge

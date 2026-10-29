@@ -1,13 +1,13 @@
 import SwiftUI
 
 /// A reusable section header with title and optional "See all" button
-public struct SectionHeader: View {
+package struct SectionHeader: View {
     let title: String
     let icon: String?
     let showSeeAll: Bool
     let onSeeAllTap: (() -> Void)?
 
-    public init(
+    package init(
         title: String,
         icon: String? = nil,
         showSeeAll: Bool = false,
@@ -19,7 +19,7 @@ public struct SectionHeader: View {
         self.onSeeAllTap = onSeeAllTap
     }
 
-    public var body: some View {
+    package var body: some View {
         HStack(spacing: AppLayout.Spacing.small) {
             if let icon = icon {
                 Image(systemName: icon)

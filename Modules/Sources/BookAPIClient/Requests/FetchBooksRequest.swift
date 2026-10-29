@@ -1,15 +1,15 @@
 import Foundation
 import NetworkClient
 
-public struct FetchBooksRequest: Request {
-    public typealias Response = GoogleBooksResponse
+package struct FetchBooksRequest: Request {
+    package typealias Response = GoogleBooksResponse
 
-    public let query: String
-    public let startIndex: Int
-    public let maxResults: Int
+    package let query: String
+    package let startIndex: Int
+    package let maxResults: Int
 
-    public var path: String { "/books/v1/volumes" }
-    public var queryItems: [URLQueryItem] {
+    package var path: String { "/books/v1/volumes" }
+    package var queryItems: [URLQueryItem] {
         [
             .init(name: "q", value: query),
             .init(name: "startIndex", value: "\(startIndex)"),
@@ -17,7 +17,7 @@ public struct FetchBooksRequest: Request {
         ]
     }
 
-    public init(query: String, startIndex: Int = 0, maxResults: Int = 20) {
+    package init(query: String, startIndex: Int = 0, maxResults: Int = 20) {
         self.query = query
         self.startIndex = startIndex
         self.maxResults = maxResults
