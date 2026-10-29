@@ -1,11 +1,11 @@
-// swift-tools-version: 5.9
+// swift-tools-version: 6.2
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
 
 let package = Package(
     name: "SharedUI",
-    platforms: [.iOS(.v15)],
+    platforms: [.iOS(.v26)],
     products: [
         .library(
             name: "SharedUI",
@@ -32,5 +32,6 @@ let package = Package(
                 .product(name: "SnapshotTesting", package: "swift-snapshot-testing")
             ]
         ),
-    ]
+    ],
+    swiftLanguageModes: [.v5]
 )
