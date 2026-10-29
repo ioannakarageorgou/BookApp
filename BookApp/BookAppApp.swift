@@ -5,11 +5,14 @@ import ComposableArchitecture
 struct BookAppApp: App {
     var body: some Scene {
         WindowGroup {
-            BookListView(
-                store: Store(initialState: BookList.State()) {
-                    BookList()
-                }
-            )
+            // Unit tests run inside the app; skip the real UI so it never hits the live API.
+            if !isTesting {
+                BookListView(
+                    store: Store(initialState: BookList.State()) {
+                        BookList()
+                    }
+                )
+            }
         }
     }
 }

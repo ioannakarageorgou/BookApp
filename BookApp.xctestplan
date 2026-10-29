@@ -1,0 +1,48 @@
+{
+  "configurations" : [
+    {
+      "id" : "689ED13A-18F6-42F9-98D4-5A5250B37806",
+      "name" : "Default",
+      "options" : {}
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : true,
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:BookApp.xcodeproj",
+      "identifier" : "0199F20E2DFB15740083EDEE",
+      "name" : "BookApp"
+    }
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:BookApp.xcodeproj",
+        "identifier" : "0186B69F2DFEF8C80024C08D",
+        "name" : "BookAppTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:NetworkClient",
+        "identifier" : "NetworkClientTests",
+        "name" : "NetworkClientTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:BookAPIClient",
+        "identifier" : "BookAPIClientTests",
+        "name" : "BookAPIClientTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:SharedUI",
+        "identifier" : "SharedUITests",
+        "name" : "SharedUITests"
+      }
+    }
+  ],
+  "version" : 1
+}
