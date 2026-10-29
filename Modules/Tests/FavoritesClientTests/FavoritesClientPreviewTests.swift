@@ -7,38 +7,38 @@ struct FavoritesClientPreviewTests {
     let client = FavoritesClient.previewValue
 
     @Test
-    func startsEmpty() throws {
-        #expect(try client.favorites().isEmpty)
-        #expect(!client.isFavorite(id: "1"))
+    func startsEmpty() async throws {
+        #expect(try await client.favorites().isEmpty)
+        #expect(await client.isFavorite(id: "1") == false)
     }
 
     @Test
-    func addAndRemoveUpdateTheShelf() throws {
+    func addAndRemoveUpdateTheShelf() async throws {
         let book = Book.fixture(id: "1")
 
-        try client.add(book: book)
-        #expect(try client.favorites() == [book])
-        #expect(client.isFavorite(id: "1"))
+        try await client.add(book: book)
+        #expect(try await client.favorites() == [book])
+        #expect(await client.isFavorite(id: "1"))
 
-        try client.remove(id: "1")
-        #expect(try client.favorites().isEmpty)
-        #expect(!client.isFavorite(id: "1"))
+        try await client.remove(id: "1")
+        #expect(try await client.favorites().isEmpty)
+        #expect(await client.isFavorite(id: "1") == false)
     }
 
     @Test
-    func addingTheSameBookTwiceKeepsOneCopy() throws {
+    func addingTheSameBookTwiceKeepsOneCopy() async throws {
         let book = Book.fixture(id: "1")
 
-        try client.add(book: book)
-        try client.add(book: book)
+        try await client.add(book: book)
+        try await client.add(book: book)
 
-        #expect(try client.favorites() == [book])
+        #expect(try await client.favorites() == [book])
     }
 
     @Test
-    func eachPreviewValueHasItsOwnShelf() throws {
-        try client.add(book: Book.fixture(id: "1"))
+    func eachPreviewValueHasItsOwnShelf() async throws {
+        try await client.add(book: Book.fixture(id: "1"))
 
-        #expect(try FavoritesClient.previewValue.favorites().isEmpty)
+        #expect(try await FavoritesClient.previewValue.favorites().isEmpty)
     }
 }

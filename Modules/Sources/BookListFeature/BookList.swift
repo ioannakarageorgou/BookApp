@@ -203,7 +203,7 @@ public struct BookList {
                 state.favoriteBooks = .loading
                 return .run { [favoritesClient] send in
                     do {
-                        let favorites = try favoritesClient.favorites()
+                        let favorites = try await favoritesClient.favorites()
                         await send(.favoritesResponse(.success(favorites)))
                     } catch {
                         await send(.favoritesResponse(.failure(error)))

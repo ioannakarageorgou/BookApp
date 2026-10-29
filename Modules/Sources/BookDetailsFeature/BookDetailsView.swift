@@ -79,6 +79,7 @@ private extension BookDetailsView {
                 .foregroundColor(store.isFavorite ? Theme.textDestructive : Theme.accent)
             }
             .buttonStyle(.plain)
+            .disabled(store.isUpdatingFavorite)
         }
     }
 

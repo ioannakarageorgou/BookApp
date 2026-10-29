@@ -3,12 +3,14 @@ import DependenciesMacros
 import Models
 
 /// The user's shelf of favorite books. The live implementation is in `FavoritesClientLive`.
+///
+/// Every endpoint is `async`, so reducers can only reach storage from effects.
 @DependencyClient
 public struct FavoritesClient: Sendable {
-    public var favorites: @Sendable () throws -> [Book]
-    public var isFavorite: @Sendable (_ id: Book.ID) -> Bool = { _ in false }
-    public var add: @Sendable (_ book: Book) throws -> Void
-    public var remove: @Sendable (_ id: Book.ID) throws -> Void
+    public var favorites: @Sendable () async throws -> [Book]
+    public var isFavorite: @Sendable (_ id: Book.ID) async -> Bool = { _ in false }
+    public var add: @Sendable (_ book: Book) async throws -> Void
+    public var remove: @Sendable (_ id: Book.ID) async throws -> Void
 }
 
 extension FavoritesClient: TestDependencyKey {

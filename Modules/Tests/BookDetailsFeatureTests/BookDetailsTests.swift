@@ -11,7 +11,7 @@ struct BookDetailsTests {
     let details = Details.fixture()
 
     @Test
-    func fetchDetailsLoadsDetailsAndFavoriteState() async {
+    func fetchDetailsLoadsDetailsThenFavoriteState() async {
         let requestedIDs = LockIsolated<[Book.ID]>([])
         let store = makeStore(BookDetails.State(bookId: details.core.id)) { [details] in
             $0.booksClient.fetchBookDetails = { id in
@@ -26,13 +26,16 @@ struct BookDetailsTests {
         }
         await store.receive(\.bookDetailsResponse) {
             $0.bookDetails = .loaded(self.details)
+        }
+        await store.receive(\.favoriteStatusLoaded) {
             $0.isFavorite = true
         }
         #expect(requestedIDs.value == [details.core.id])
     }
 
     @Test
-    func fetchDetailsFailureShowsError() async {
+    func fetchDetailsFailureShowsErrorWithoutCheckingFavorites() async {
+        // favoritesClient isn't configured: checking it after a failure would fail the test.
         let store = makeStore(BookDetails.State(bookId: "bad")) {
             $0.booksClient.fetchBookDetails = { _ in throw TestError.someError }
         }
@@ -53,6 +56,10 @@ struct BookDetailsTests {
         }
 
         await store.send(.toggleFavoriteTapped) {
+            $0.isUpdatingFavorite = true
+        }
+        await store.receive(\.toggleFavoriteResponse) {
+            $0.isUpdatingFavorite = false
             $0.isFavorite = true
         }
         await store.receive(\.delegate.favoritesChanged)
@@ -67,6 +74,10 @@ struct BookDetailsTests {
         }
 
         await store.send(.toggleFavoriteTapped) {
+            $0.isUpdatingFavorite = true
+        }
+        await store.receive(\.toggleFavoriteResponse) {
+            $0.isUpdatingFavorite = false
             $0.isFavorite = false
         }
         await store.receive(\.delegate.favoritesChanged)
@@ -79,7 +90,21 @@ struct BookDetailsTests {
             $0.favoritesClient.add = { _ in throw TestError.someError }
         }
 
+        await store.send(.toggleFavoriteTapped) {
+            $0.isUpdatingFavorite = true
+        }
         // Nothing changed, so nothing is announced to the parent.
+        await store.receive(\.toggleFavoriteResponse) {
+            $0.isUpdatingFavorite = false
+        }
+    }
+
+    @Test
+    func toggleFavoriteIsIgnoredWhileASaveIsRunning() async {
+        var state = loaded(isFavorite: false)
+        state.isUpdatingFavorite = true
+        let store = makeStore(state)
+
         await store.send(.toggleFavoriteTapped)
     }
 

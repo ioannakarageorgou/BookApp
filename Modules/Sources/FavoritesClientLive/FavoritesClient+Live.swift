@@ -4,6 +4,9 @@ import RealmSwift
 
 extension FavoritesClient {
     /// Realm implementation. Each call opens the Realm described by `configuration`.
+    ///
+    /// The closures are deliberately synchronous: inside an `async` closure, `Realm(configuration:)`
+    /// would resolve to Realm's async initializer, which runs on the main actor.
     public static func live(configuration: Realm.Configuration = .defaultConfiguration) -> FavoritesClient {
         FavoritesClient(
             favorites: {
