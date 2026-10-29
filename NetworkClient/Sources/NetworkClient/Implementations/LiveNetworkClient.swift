@@ -1,23 +1,17 @@
 import Foundation
 
-/// Main interface to send network requests.
-/// Holds the API key for authentication.
-/// Uses URLRequestBuilder and NetworkDispatcher internally to:
-/// - Build URLRequest (injecting API key),
-/// - Perform network call,
-/// - Decode JSON response to Request.Response type,
-/// - Throw unified NetworkError on failure.
+/// Builds the `URLRequest`, sends it through `NetworkDispatcher` and decodes the JSON response.
 struct LiveNetworkClient: NetworkClient {
+    private let configuration: NetworkClientConfiguration
     private let dispatcher: NetworkDispatcher
-    private let apiKey: String?
 
-    public init(apiKey: String? = nil, dispatcher: NetworkDispatcher = NetworkDispatcher()) {
-        self.apiKey = apiKey
+    init(configuration: NetworkClientConfiguration, dispatcher: NetworkDispatcher = NetworkDispatcher()) {
+        self.configuration = configuration
         self.dispatcher = dispatcher
     }
 
-    public func send<T: Request>(_ request: T) async throws -> T.Response {
-        let urlRequest = try URLRequestBuilder.build(from: request, apiKey: apiKey)
+    func send<T: Request>(_ request: T) async throws -> T.Response {
+        let urlRequest = try URLRequestBuilder.build(from: request, configuration: configuration)
         let data = try await dispatcher.send(urlRequest)
 
         do {

@@ -170,7 +170,7 @@ struct BooksRepositoryTests {
     // MARK: - Helpers
 
     private func makeRepository(handler: ((any Request) throws -> Any)? = nil) -> BooksRepository {
-        BooksRepository(networkClient: MockNetworkClient(handler: handler))
+        BooksRepository(networkClient: StubNetworkClient(handler: handler))
     }
 
     private static func volume(
@@ -193,5 +193,19 @@ struct BooksRepositoryTests {
                 imageLinks: thumbnail.map { ImageLinks(thumbnail: $0) }
             )
         )
+    }
+}
+
+/// Temporary local stub. The shared `MockNetworkClient` (NetworkClientTestSupport) can't be
+/// linked into this app-hosted test bundle: Xcode would turn NetworkClient into a dynamic
+/// framework and its coverage would be lost. Deleted with `BooksRepository` in M3.
+private struct StubNetworkClient: NetworkClient {
+    let handler: ((any Request) throws -> Any)?
+
+    func send<T: Request>(_ request: T) async throws -> T.Response {
+        guard let response = try handler?(request) as? T.Response else {
+            throw TestError.someError
+        }
+        return response
     }
 }

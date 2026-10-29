@@ -9,8 +9,8 @@ struct FetchBooksRequestTests {
         let request = FetchBooksRequest(query: "Swift")
 
         #expect(request.path == "/books/v1/volumes")
-        #expect(request.method == "GET")
-        #expect(request.headers == nil)
+        #expect(request.method == .get)
+        #expect(request.headers.isEmpty)
     }
 
     @Test

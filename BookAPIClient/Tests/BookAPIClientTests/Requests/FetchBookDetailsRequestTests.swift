@@ -8,8 +8,8 @@ struct FetchBookDetailsRequestTests {
         let request = FetchBookDetailsRequest(bookID: "abc123")
 
         #expect(request.path == "/books/v1/volumes/abc123")
-        #expect(request.method == "GET")
+        #expect(request.method == .get)
         #expect(request.queryItems.isEmpty)
-        #expect(request.headers == nil)
+        #expect(request.headers.isEmpty)
     }
 }

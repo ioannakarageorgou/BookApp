@@ -10,13 +10,20 @@ let package = Package(
         .library(
             name: "NetworkClient",
             targets: ["NetworkClient"]),
+        .library(
+            name: "NetworkClientTestSupport",
+            targets: ["NetworkClientTestSupport"]),
     ],
     targets: [
         .target(
             name: "NetworkClient"),
+        .target(
+            name: "NetworkClientTestSupport",
+            dependencies: ["NetworkClient"]
+        ),
         .testTarget(
             name: "NetworkClientTests",
-            dependencies: ["NetworkClient"]
+            dependencies: ["NetworkClient", "NetworkClientTestSupport"]
         ),
     ],
     swiftLanguageModes: [.v5]

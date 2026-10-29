@@ -16,8 +16,6 @@ public struct FetchBooksRequest: Request {
             .init(name: "maxResults", value: "\(maxResults)")
         ]
     }
-    public var method: String { "GET" }
-    public var headers: [String: String]? { nil }
 
     public init(query: String, startIndex: Int = 0, maxResults: Int = 20) {
         self.query = query

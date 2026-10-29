@@ -6,7 +6,13 @@ import Testing
 extension StubbedNetworkTests {
     @Suite
     struct LiveNetworkClientTests {
-        let client = LiveNetworkClient(apiKey: "dummy", dispatcher: NetworkDispatcher(session: .stubbed()))
+        let client = LiveNetworkClient(
+            configuration: NetworkClientConfiguration(
+                baseURL: URL(string: "https://api.example.com")!,
+                defaultQueryItems: [URLQueryItem(name: "key", value: "dummy")]
+            ),
+            dispatcher: NetworkDispatcher(session: .stubbed())
+        )
 
         @Test
         func decodesSuccessfulResponse() async throws {
@@ -18,7 +24,7 @@ extension StubbedNetworkTests {
         }
 
         @Test
-        func sendsBuiltRequestWithAPIKey() async throws {
+        func sendsRequestBuiltFromConfiguration() async throws {
             let sentRequest = Mutex<URLRequest?>(nil)
             URLProtocolStub.handler = { request in
                 sentRequest.withLock { $0 = request }
@@ -28,8 +34,7 @@ extension StubbedNetworkTests {
             _ = try await client.send(MockRequest())
 
             let url = try #require(sentRequest.withLock { $0?.url })
-            #expect(url.path == "/mock")
-            #expect(url.query?.contains("key=dummy") == true)
+            #expect(url == URL(string: "https://api.example.com/mock?key=dummy"))
         }
 
         @Test

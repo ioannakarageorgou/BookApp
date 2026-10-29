@@ -1,28 +1,32 @@
 import Foundation
 
-/// Builds a URLRequest from any Request instance.
-/// Adds base URL scheme and host.
-/// Injects the API key as a query parameter to authenticate requests.
-/// Sets HTTP method and headers as defined by the Request.
+/// Builds a `URLRequest` from a `Request` and the API's configuration.
 enum URLRequestBuilder {
-    static func build<T: Request>(from request: T, apiKey: String? = nil) throws -> URLRequest {
-        var components = URLComponents()
-        components.scheme = "https"
-        components.host = "www.googleapis.com"
-        components.path = request.path
-
-        var items = request.queryItems
-        if let key = apiKey {
-            items.append(URLQueryItem(name: "key", value: key))
+    static func build<T: Request>(from request: T, configuration: NetworkClientConfiguration) throws -> URLRequest {
+        guard
+            request.path.hasPrefix("/"),
+            var components = URLComponents(url: configuration.baseURL, resolvingAgainstBaseURL: false)
+        else {
+            throw NetworkError.invalidURL
         }
-        components.queryItems = items
 
-        guard let url = components.url else { throw NetworkError.invalidURL }
+        let basePath = components.path.hasSuffix("/") ? String(components.path.dropLast()) : components.path
+        components.path = basePath + request.path
+
+        let queryItems = request.queryItems + configuration.defaultQueryItems
+        components.queryItems = queryItems.isEmpty ? nil : queryItems
+
+        guard let url = components.url else {
+            throw NetworkError.invalidURL
+        }
 
         var urlRequest = URLRequest(url: url)
-        urlRequest.httpMethod = request.method
-        request.headers?.forEach { urlRequest.setValue($1, forHTTPHeaderField: $0) }
-
+        urlRequest.httpMethod = request.method.rawValue
+        urlRequest.httpBody = request.body
+        let headers = configuration.defaultHeaders.merging(request.headers) { _, requestValue in requestValue }
+        for (field, value) in headers {
+            urlRequest.setValue(value, forHTTPHeaderField: field)
+        }
         return urlRequest
     }
 }

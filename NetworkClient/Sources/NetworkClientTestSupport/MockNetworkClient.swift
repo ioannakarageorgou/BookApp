@@ -1,4 +1,5 @@
 import Foundation
+import NetworkClient
 
 public final class MockNetworkClient: NetworkClient {
     public var handler: ((any Request) throws -> Any)?
