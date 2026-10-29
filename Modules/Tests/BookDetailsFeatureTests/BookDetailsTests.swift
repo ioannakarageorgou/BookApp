@@ -55,6 +55,7 @@ struct BookDetailsTests {
         await store.send(.toggleFavoriteTapped) {
             $0.isFavorite = true
         }
+        await store.receive(\.delegate.favoritesChanged)
         #expect(added.value == [details.core])
     }
 
@@ -68,6 +69,7 @@ struct BookDetailsTests {
         await store.send(.toggleFavoriteTapped) {
             $0.isFavorite = false
         }
+        await store.receive(\.delegate.favoritesChanged)
         #expect(removedIDs.value == [details.core.id])
     }
 
@@ -77,6 +79,7 @@ struct BookDetailsTests {
             $0.favoritesClient.add = { _ in throw TestError.someError }
         }
 
+        // Nothing changed, so nothing is announced to the parent.
         await store.send(.toggleFavoriteTapped)
     }
 

@@ -23,6 +23,13 @@ public struct BookDetails {
         case fetchDetails
         case bookDetailsResponse(Result<Details, Error>)
         case toggleFavoriteTapped
+        case delegate(Delegate)
+
+        /// Announcements for the parent feature; BookDetails never handles these itself.
+        @CasePathable
+        public enum Delegate: Equatable {
+            case favoritesChanged
+        }
     }
 
     @Dependency(\.booksClient) var booksClient
@@ -65,11 +72,15 @@ public struct BookDetails {
                         try favoritesClient.add(book: book)
                         state.isFavorite = true
                     }
+                    return .send(.delegate(.favoritesChanged))
                 } catch {
                     // TODO: Optionally log or handle the error
                     // For now, maybe just print it or set a .error state
                     print("Failed to update favorites: \(error)")
+                    return .none
                 }
+
+            case .delegate:
                 return .none
             }
         }

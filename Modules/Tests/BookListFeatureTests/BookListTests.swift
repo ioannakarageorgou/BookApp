@@ -300,6 +300,21 @@ struct BookListTests {
     // MARK: - Favorites
 
     @Test
+    func favoritesChangedInDetailsReloadsTheShelf() async {
+        let store = makeStore(BookList.State(bookDetails: BookDetails.State(bookId: "4"))) {
+            $0.favoritesClient.favorites = { [self.newBook] }
+        }
+
+        await store.send(.bookDetails(.presented(.delegate(.favoritesChanged))))
+        await store.receive(\.loadFavorites) {
+            $0.favoriteBooks = .loading
+        }
+        await store.receive(\.favoritesResponse) {
+            $0.favoriteBooks = .loaded([self.newBook])
+        }
+    }
+
+    @Test
     func loadFavoritesShowsSavedBooks() async {
         let store = makeStore {
             $0.favoritesClient.favorites = { Book.fixtures }

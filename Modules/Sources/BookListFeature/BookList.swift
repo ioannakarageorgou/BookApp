@@ -191,6 +191,10 @@ public struct BookList {
                 state.bookDetails = BookDetails.State(bookId: book.id)
                 return .none
 
+            case .bookDetails(.presented(.delegate(.favoritesChanged))):
+                // The shelf shows favorites too, so refresh it whenever details changes them.
+                return .send(.loadFavorites)
+
             case .bookDetails:
                 return .none
 
