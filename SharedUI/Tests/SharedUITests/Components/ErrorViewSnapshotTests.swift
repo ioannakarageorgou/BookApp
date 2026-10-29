@@ -1,26 +1,27 @@
-import XCTest
 import SwiftUI
-import SnapshotTesting
+import Testing
 @testable import SharedUI
 
-final class ErrorViewSnapshotTests: SnapshotTestCase {
-    func test_errorView_defaultMessage_withoutRetry() {
-        let view = ErrorView()
-        assertSnapshots(of: view, named: "errorView_default_withoutRetry")
+@MainActor
+@Suite
+struct ErrorViewSnapshotTests {
+    @Test
+    func defaultMessageWithoutRetry() {
+        assertLightAndDarkSnapshots(of: ErrorView(), named: "default_withoutRetry")
     }
 
-    func test_errorView_customMessage_withoutRetry() {
-        let view = ErrorView(message: "Custom error message")
-        assertSnapshots(of: view, named: "errorView_custom_withoutRetry")
+    @Test
+    func customMessageWithoutRetry() {
+        assertLightAndDarkSnapshots(of: ErrorView(message: "Custom error message"), named: "custom_withoutRetry")
     }
 
-    func test_errorView_defaultMessage_withRetry() {
-        let view = ErrorView(onRetry: {})
-        assertSnapshots(of: view, named: "errorView_default_withRetry")
+    @Test
+    func defaultMessageWithRetry() {
+        assertLightAndDarkSnapshots(of: ErrorView(onRetry: {}), named: "default_withRetry")
     }
 
-    func test_errorView_customMessage_withRetry() {
-        let view = ErrorView(message: "Custom error occurred", onRetry: {})
-        assertSnapshots(of: view, named: "errorView_custom_withRetry")
+    @Test
+    func customMessageWithRetry() {
+        assertLightAndDarkSnapshots(of: ErrorView(message: "Custom error occurred", onRetry: {}), named: "custom_withRetry")
     }
 }

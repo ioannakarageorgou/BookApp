@@ -1,16 +1,17 @@
-import XCTest
 import SwiftUI
-import SnapshotTesting
+import Testing
 @testable import SharedUI
 
-final class LoadingViewSnapshotTests: SnapshotTestCase {
-    func test_loadingView_defaultMessage() {
-        let view = LoadingView()
-        assertSnapshots(of: view, named: "loadingView_defaultMessage")
+@MainActor
+@Suite
+struct LoadingViewSnapshotTests {
+    @Test
+    func defaultMessage() {
+        assertLightAndDarkSnapshots(of: LoadingView(), named: "defaultMessage")
     }
 
-    func test_loadingView_customMessage() {
-        let view = LoadingView(message: "Please wait...")
-        assertSnapshots(of: view, named: "loadingView_customMessage")
+    @Test
+    func customMessage() {
+        assertLightAndDarkSnapshots(of: LoadingView(message: "Please wait..."), named: "customMessage")
     }
 }
