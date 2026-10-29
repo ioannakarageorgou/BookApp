@@ -1,56 +1,48 @@
-import XCTest
+import Foundation
+import Synchronization
+import Testing
 @testable import NetworkClient
 
-final class LiveNetworkClientTests: XCTestCase {
-    override class func setUp() {
-        URLProtocol.registerClass(URLProtocolStub.self)
-    }
+extension StubbedNetworkTests {
+    @Suite
+    struct LiveNetworkClientTests {
+        let client = LiveNetworkClient(apiKey: "dummy", dispatcher: NetworkDispatcher(session: .stubbed()))
 
-    override class func tearDown() {
-        URLProtocol.unregisterClass(URLProtocolStub.self)
-    }
+        @Test
+        func decodesSuccessfulResponse() async throws {
+            URLProtocolStub.handler = { _ in (.stub(statusCode: 200), Data(#"{"message":"success"}"#.utf8)) }
 
-    func testSend_successfulDecoding() async throws {
-        let data = #"{"message":"success"}"#.data(using: .utf8)!
-        let response = HTTPURLResponse(
-            url: URL(string: "https://test.com")!,
-            statusCode: 200,
-            httpVersion: nil,
-            headerFields: nil
-        )
+            let response = try await client.send(MockRequest())
 
-        URLProtocolStub.stubResponseData = data
-        URLProtocolStub.stubResponse = response
+            #expect(response == MockResponse(message: "success"))
+        }
 
-        let client = makeLiveNetworkClient(apiKey: "dummy")
-        let mockRequest = MockRequest()
-        let result = try await client.send(mockRequest)
+        @Test
+        func sendsBuiltRequestWithAPIKey() async throws {
+            let sentRequest = Mutex<URLRequest?>(nil)
+            URLProtocolStub.handler = { request in
+                sentRequest.withLock { $0 = request }
+                return (.stub(statusCode: 200), Data(#"{"message":"success"}"#.utf8))
+            }
 
-        XCTAssertEqual(result, MockResponse(message: "success"))
-    }
-
-    func testSend_decodingError() async throws {
-        let data = #"{"unexpected":"format"}"#.data(using: .utf8)!
-        let response = HTTPURLResponse(
-            url: URL(string: "https://test.com")!,
-            statusCode: 200,
-            httpVersion: nil,
-            headerFields: nil
-        )
-
-        URLProtocolStub.stubResponseData = data
-        URLProtocolStub.stubResponse = response
-
-        let client = makeLiveNetworkClient(apiKey: "dummy")
-
-        do {
             _ = try await client.send(MockRequest())
-            XCTFail("Expected decoding error")
-        } catch let error as NetworkError {
-            if case .decodingError = error {
-                XCTAssertTrue(true)
-            } else {
-                XCTFail("Unexpected error type")
+
+            let url = try #require(sentRequest.withLock { $0?.url })
+            #expect(url.path == "/mock")
+            #expect(url.query?.contains("key=dummy") == true)
+        }
+
+        @Test
+        func throwsDecodingErrorForUnexpectedPayload() async {
+            URLProtocolStub.handler = { _ in (.stub(statusCode: 200), Data(#"{"unexpected":"format"}"#.utf8)) }
+
+            let error = await #expect(throws: NetworkError.self) {
+                try await client.send(MockRequest())
+            }
+
+            guard case .decodingError = error else {
+                Issue.record("Expected .decodingError, got \(String(describing: error))")
+                return
             }
         }
     }
