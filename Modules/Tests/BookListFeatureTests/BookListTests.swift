@@ -31,7 +31,7 @@ struct BookListTests {
         }
         await store.receive(\.booksResponse) {
             $0.books = .loaded(Book.fixtures)
-            $0.currentPage = 1
+            $0.pagesLoaded = 1
             $0.totalItems = 3
         }
         #expect(fetchBooksCalls.value == [.init(query: "bestsellers", page: 0)])
@@ -63,7 +63,7 @@ struct BookListTests {
         }
         await store.receive(\.booksResponse) {
             $0.books = .loaded(Book.fixtures + [self.newBook])
-            $0.currentPage = 2
+            $0.pagesLoaded = 2
             $0.isLoadingNextPage = false
         }
     }
@@ -79,12 +79,10 @@ struct BookListTests {
         }
         await store.receive(\.booksResponse) {
             $0.books = .loaded(Book.fixtures + [self.newBook])
-            $0.currentPage = 2
+            $0.pagesLoaded = 2
             $0.isLoadingNextPage = false
         }
-        withKnownIssue("Requests page 2 after the first page, skipping results 21–40; fixed in Phase 3") {
-            #expect(fetchBooksCalls.value == [.init(query: "bestsellers", page: 1)])
-        }
+        #expect(fetchBooksCalls.value == [.init(query: "bestsellers", page: 1)])
     }
 
     @Test
@@ -117,7 +115,7 @@ struct BookListTests {
         }
         await store.receive(\.booksResponse) {
             $0.books = .loaded(Book.fixtures + [self.newBook])
-            $0.currentPage = 2
+            $0.pagesLoaded = 2
             $0.isLoadingNextPage = false
         }
     }
@@ -155,7 +153,7 @@ struct BookListTests {
         }
         await store.receive(\.booksResponse) {
             $0.books = .loaded(Book.fixtures)
-            $0.currentPage = 1
+            $0.pagesLoaded = 1
             $0.totalItems = 3
         }
         #expect(fetchBooksCalls.value == [.init(query: "swift", page: 0)])
@@ -173,7 +171,7 @@ struct BookListTests {
         }
         await store.receive(\.booksResponse) {
             $0.books = .loaded([])
-            $0.currentPage = 1
+            $0.pagesLoaded = 1
         }
         #expect(fetchBooksCalls.value == [.init(query: "fiction bestsellers", page: 0)])
     }
@@ -193,7 +191,7 @@ struct BookListTests {
         }
         await store.receive(\.booksResponse) {
             $0.books = .loaded(Book.fixtures)
-            $0.currentPage = 1
+            $0.pagesLoaded = 1
             $0.totalItems = 3
         }
         #expect(fetchBooksCalls.value == [.init(query: "mystery bestsellers", page: 0)])
@@ -251,9 +249,9 @@ struct BookListTests {
 
     // MARK: - Helpers
 
-    /// State right after the first page loaded: three books, `currentPage` 1.
+    /// State right after the first page loaded: three books, `pagesLoaded` 1.
     private func firstPageLoaded(totalItems: Int = 40) -> BookList.State {
-        BookList.State(books: .loaded(Book.fixtures), totalItems: totalItems, currentPage: 1)
+        BookList.State(books: .loaded(Book.fixtures), totalItems: totalItems, pagesLoaded: 1)
     }
 
     /// A `fetchBooks` implementation that records each call and returns `result`.

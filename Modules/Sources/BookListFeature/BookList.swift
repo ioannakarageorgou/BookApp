@@ -19,7 +19,7 @@ public struct BookList {
         // MARK: - Pagination
         public var isLoadingNextPage: Bool
         public var totalItems: Int
-        public var currentPage: Int
+        public var pagesLoaded: Int
         public var hasMorePages: Bool {
             switch books {
             case .loaded(let loadedBooks):
@@ -58,7 +58,7 @@ public struct BookList {
             selectedCategory: Category = .all,
             isLoadingNextPage: Bool = false,
             totalItems: Int = 0,
-            currentPage: Int = 0,
+            pagesLoaded: Int = 0,
             favoriteBooks: Loading<[Book]> = .idle
         ) {
             self.books = books
@@ -67,7 +67,7 @@ public struct BookList {
             self.selectedCategory = selectedCategory
             self.isLoadingNextPage = isLoadingNextPage
             self.totalItems = totalItems
-            self.currentPage = currentPage
+            self.pagesLoaded = pagesLoaded
             self.favoriteBooks = favoriteBooks
         }
     }
@@ -110,13 +110,14 @@ public struct BookList {
             case let .fetchBooks(reset):
                 if reset {
                     state.books = .loading
-                    state.currentPage = 0
+                    state.pagesLoaded = 0
                     state.isLoadingNextPage = false
                 } else {
                     state.isLoadingNextPage = true
                 }
 
-                let page = reset ? 0 : state.currentPage + 1
+                // Pages are zero-based, so the next page to request is the number already loaded.
+                let page = reset ? 0 : state.pagesLoaded
 
                 // Determine query: user search takes precedence, otherwise use category
                 let query: String
@@ -147,7 +148,7 @@ public struct BookList {
                     state.books = .loaded(pagedBooks.books)
                 }
 
-                state.currentPage += 1
+                state.pagesLoaded += 1
                 state.totalItems = pagedBooks.totalItems
                 return .none
 
