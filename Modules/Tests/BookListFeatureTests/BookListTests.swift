@@ -197,6 +197,39 @@ struct BookListTests {
         #expect(fetchBooksCalls.value == [.init(query: "mystery bestsellers", page: 0)])
     }
 
+    @Test
+    func changingCategoryCancelsTheInFlightSearch() async {
+        let clock = TestClock()
+        let staleBook = Book.fixture(id: "stale", title: "Stale Bestseller")
+        let store = makeStore {
+            // The first search ("bestsellers") is slow; any other query answers immediately.
+            $0.booksClient.fetchBooks = { query, _ in
+                if query == "bestsellers" {
+                    try await clock.sleep(for: .seconds(1))
+                    return PagedBooks(books: [staleBook], totalItems: 1)
+                }
+                return PagedBooks(books: Book.fixtures, totalItems: 3)
+            }
+        }
+
+        await store.send(.fetchBooks(reset: true)) {
+            $0.books = .loading
+        }
+        await store.send(.categorySelected(.mystery)) {
+            $0.selectedCategory = .mystery
+        }
+        await store.receive(\.fetchBooks)
+        await store.receive(\.booksResponse) {
+            $0.books = .loaded(Book.fixtures)
+            $0.pagesLoaded = 1
+            $0.totalItems = 3
+        }
+
+        // Let the stale "bestsellers" request finish. TestStore is exhaustive, so if its
+        // response still reaches the reducer, this test fails with an unexpected action.
+        await clock.advance(by: .seconds(1))
+    }
+
     // MARK: - Navigation
 
     @Test

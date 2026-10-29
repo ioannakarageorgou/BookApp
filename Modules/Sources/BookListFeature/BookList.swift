@@ -135,6 +135,9 @@ public struct BookList {
                         await send(.booksResponse(.failure(error)))
                     }
                 }
+                // A new search or page replaces any request still in flight, so a stale
+                // response can never land in the new list.
+                .cancellable(id: CancelID.fetchBooks, cancelInFlight: true)
 
             case let .booksResponse(.success(pagedBooks)):
                 state.isLoadingNextPage = false
@@ -209,6 +212,7 @@ public struct BookList {
 
 private extension BookList {
     enum CancelID {
+        case fetchBooks
         case fetchNextPageDebounce
     }
 }
