@@ -1,6 +1,9 @@
 import FavoritesClient
 import Models
+import OSLog
 import RealmSwift
+
+private let logger = Logger(subsystem: "BookApp", category: "favorites")
 
 extension FavoritesClient {
     /// Realm implementation. Each call opens the Realm described by `configuration`.
@@ -18,7 +21,7 @@ extension FavoritesClient {
                     let realm = try Realm(configuration: configuration)
                     return realm.object(ofType: BookObject.self, forPrimaryKey: id) != nil
                 } catch {
-                    print("Realm error when checking favorite: \(error)")
+                    logger.error("Realm error when checking favorite: \(error)")
                     return false
                 }
             },

@@ -1,4 +1,7 @@
 import Foundation
+import OSLog
+
+private let logger = Logger(subsystem: "BookApp", category: "network")
 
 /// Performs the `URLSession` call and validates the HTTP status code.
 ///
@@ -33,11 +36,8 @@ struct NetworkDispatcher {
         }
 
         guard (200..<300).contains(httpResponse.statusCode) else {
-#if DEBUG
             let errorBody = String(data: data, encoding: .utf8) ?? "<unreadable>"
-            print("🚨 HTTP Error \(httpResponse.statusCode)")
-            print("📄 Body: \(errorBody)")
-#endif
+            logger.error("HTTP \(httpResponse.statusCode): \(errorBody)")
             throw NetworkError.httpError(httpResponse.statusCode)
         }
 

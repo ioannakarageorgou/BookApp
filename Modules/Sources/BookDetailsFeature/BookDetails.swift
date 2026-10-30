@@ -3,6 +3,9 @@ import ComposableArchitecture
 import FavoritesClient
 import Foundation
 import Models
+import OSLog
+
+private let logger = Logger(subsystem: "BookApp", category: "bookDetails")
 
 @Reducer
 public struct BookDetails {
@@ -100,9 +103,7 @@ public struct BookDetails {
 
             case let .toggleFavoriteResponse(.failure(error)):
                 state.isUpdatingFavorite = false
-                // TODO: Optionally log or handle the error
-                // For now, maybe just print it or set a .error state
-                print("Failed to update favorites: \(error)")
+                logger.error("Failed to toggle favorite: \(error)")
                 return .none
 
             case .delegate:

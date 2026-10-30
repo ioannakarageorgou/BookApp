@@ -1,4 +1,7 @@
 import Foundation
+import OSLog
+
+private let logger = Logger(subsystem: "BookApp", category: "network")
 
 /// Builds the `URLRequest`, sends it through `NetworkDispatcher` and decodes the JSON response.
 struct LiveNetworkClient: NetworkClient {
@@ -18,14 +21,10 @@ struct LiveNetworkClient: NetworkClient {
             return try JSONDecoder().decode(T.Response.self, from: data)
         } catch {
 #if DEBUG
-            if let rawJSON = String(data: data, encoding: .utf8) {
-                print("🧩 Decoding failed for \(T.Response.self)")
-                print("📦 Raw JSON: \(rawJSON)")
-            } else {
-                print("🧩 Decoding failed. Could not convert data to string.")
-            }
-            print("🐛 Decoding error: \(error)")
+            let rawJSON = String(data: data, encoding: .utf8) ?? "<unreadable>"
+            logger.debug("Raw JSON for failed decode of \(T.Response.self): \(rawJSON)")
 #endif
+            logger.error("Decoding failed for \(T.Response.self): \(error)")
             throw NetworkError.decodingError(error)
         }
     }
