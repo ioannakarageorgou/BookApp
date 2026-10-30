@@ -85,7 +85,7 @@ struct BookDetailsTests {
     }
 
     @Test
-    func toggleFavoriteKeepsStateWhenSavingFails() async {
+    func toggleFavoriteShowsAlertAndKeepsStateWhenSavingFails() async {
         let store = makeStore(loaded(isFavorite: false)) {
             $0.favoritesClient.add = { _ in throw TestError.someError }
         }
@@ -93,9 +93,21 @@ struct BookDetailsTests {
         await store.send(.toggleFavoriteTapped) {
             $0.isUpdatingFavorite = true
         }
-        // Nothing changed, so nothing is announced to the parent.
+        // The favorite state is unchanged and no delegate is sent to the parent.
         await store.receive(\.toggleFavoriteResponse) {
             $0.isUpdatingFavorite = false
+            $0.alert = AlertState {
+                TextState("Could not update shelf")
+            } actions: {
+                ButtonState(role: .cancel, action: .dismissed) {
+                    TextState("OK")
+                }
+            } message: {
+                TextState("Please try again.")
+            }
+        }
+        await store.send(.alert(.dismiss)) {
+            $0.alert = nil
         }
     }
 
