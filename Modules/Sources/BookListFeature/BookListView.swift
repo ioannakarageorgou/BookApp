@@ -15,18 +15,26 @@ public struct BookListView: View {
         NavigationStack {
             ZStack {
                 Theme.background.ignoresSafeArea()
-
-                switch store.books {
-                case .idle, .loading:
-                    LoadingView(message: "Loading books...")
-
-                case .error(let message):
-                    ErrorView(message: message) {
-                        store.send(.fetchBooks())
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 0) {
+                        header
+                        searchBar
+                        categoryTabs
+                        switch store.books {
+                        case .idle, .loading:
+                            LoadingView(message: "Loading books...")
+                                .frame(minHeight: 300)
+                        case .error(let message):
+                            ErrorView(message: message) {
+                                store.send(.fetchBooks())
+                            }
+                            .frame(minHeight: 300)
+                        case .loaded(let books):
+                            favoritesSection
+                            booksSection(books: books)
+                        }
                     }
-
-                case .loaded(let books):
-                    contentView(books: books)
+                    .padding(.top, AppLayout.Spacing.medium)
                 }
             }
             .onAppear {
@@ -44,61 +52,15 @@ public struct BookListView: View {
     }
 }
 
-// MARK: - Content View (Loaded State)
-private extension BookListView {
-    @ViewBuilder
-    func contentView(books: [Book]) -> some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 0) {
-                header
-                searchBar
-                categoryTabs
-                favoritesSection
-                booksSection(books: books)
-            }
-            .padding(.top, AppLayout.Spacing.medium)
-        }
-    }
-}
-
-// MARK: - Header Section
+// MARK: - Header
 private extension BookListView {
     @ViewBuilder
     var header: some View {
-        HStack {
-            Text("Library")
-                .font(.system(size: AppLayout.FontSize.largeTitle, weight: .bold, design: .serif))
-                .foregroundColor(Theme.textPrimary)
-
-            Spacer()
-
-            profileButton
-        }
-        .padding(.horizontal, AppLayout.Spacing.medium)
-        .padding(.bottom, AppLayout.Spacing.small)
-    }
-
-    @ViewBuilder
-    var profileButton: some View {
-        Button(action: {
-            // TODO: Add profile action
-        }) {
-            Circle()
-                .fill(
-                    LinearGradient(
-                        colors: [Theme.accent, Theme.accentSecondary],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-                .frame(width: AppLayout.ImageSize.avatarSmall, height: AppLayout.ImageSize.avatarSmall)
-                .overlay(
-                    Text("JD")
-                        .font(.system(size: AppLayout.FontSize.footnote, weight: .semibold))
-                        .foregroundColor(.white)
-                )
-                .cardShadowMedium()
-        }
+        Text("Library")
+            .font(.system(size: AppLayout.FontSize.largeTitle, weight: .bold, design: .serif))
+            .foregroundColor(Theme.textPrimary)
+            .padding(.horizontal, AppLayout.Spacing.medium)
+            .padding(.bottom, AppLayout.Spacing.small)
     }
 }
 
@@ -142,15 +104,8 @@ private extension BookListView {
     var favoritesSection: some View {
         if case let .loaded(favorites) = store.favoriteBooks, !favorites.isEmpty {
             VStack(alignment: .leading, spacing: AppLayout.Spacing.medium) {
-                SectionHeader(
-                    title: "Your Shelf",
-                    icon: "heart.fill",
-                    showSeeAll: true,
-                    onSeeAllTap: {
-                        // TODO: Navigate to all favorites
-                    }
-                )
-                .padding(.horizontal, AppLayout.Spacing.medium)
+                SectionHeader(title: "Your Shelf", icon: "heart.fill")
+                    .padding(.horizontal, AppLayout.Spacing.medium)
 
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: AppLayout.Spacing.medium) {
@@ -193,7 +148,7 @@ private extension BookListView {
     }
 }
 
-// MARK: - Books Grid Section
+// MARK: - Books Section
 private extension BookListView {
     @ViewBuilder
     func booksSection(books: [Book]) -> some View {
@@ -255,7 +210,6 @@ private extension BookListView {
         .padding(.vertical, AppLayout.Spacing.large)
     }
 
-    /// Shown below the books when loading the next page fails; the books stay visible.
     @ViewBuilder
     func nextPageErrorRow(_ message: String) -> some View {
         VStack(spacing: AppLayout.Spacing.small) {

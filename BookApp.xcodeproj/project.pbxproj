@@ -536,22 +536,27 @@
 		};
 		0BA5EC0F1A2B3C4D5E6F7093 /* BooksClient */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = 019AEB082E000A5700AE732F /* XCLocalSwiftPackageReference "Modules" */;
 			productName = BooksClient;
 		};
 		0BA5EC0F1A2B3C4D5E6F7095 /* BooksClientLive */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = 019AEB082E000A5700AE732F /* XCLocalSwiftPackageReference "Modules" */;
 			productName = BooksClientLive;
 		};
 		0BA5EC0F1A2B3C4D5E6F7097 /* FavoritesClient */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = 019AEB082E000A5700AE732F /* XCLocalSwiftPackageReference "Modules" */;
 			productName = FavoritesClient;
 		};
 		0BA5EC0F1A2B3C4D5E6F7099 /* FavoritesClientLive */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = 019AEB082E000A5700AE732F /* XCLocalSwiftPackageReference "Modules" */;
 			productName = FavoritesClientLive;
 		};
 		0BA5EC0F1A2B3C4D5E6F70A1 /* BookListFeature */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = 019AEB082E000A5700AE732F /* XCLocalSwiftPackageReference "Modules" */;
 			productName = BookListFeature;
 		};
 /* End XCSwiftPackageProductDependency section */
