@@ -4,6 +4,7 @@ import SharedUI
 import SwiftUI
 
 package struct BookDetailsView: View {
+    @Environment(\.dismiss) var dismiss
     let store: StoreOf<BookDetails>
 
     package init(store: StoreOf<BookDetails>) {
@@ -11,23 +12,27 @@ package struct BookDetailsView: View {
     }
 
     package var body: some View {
-        WithPerceptionTracking {
-            VStack(alignment: .leading, spacing: AppLayout.Spacing.medium) {
+        NavigationStack {
+            Group {
                 switch store.bookDetails {
                 case .idle, .loading:
                     LoadingView(message: "Loading book details...")
-
                 case .error(let message):
                     ErrorView(message: message) {
                         store.send(.fetchDetails)
                     }
-
                 case .loaded(let details):
                     content(details)
                 }
             }
             .onAppear { store.send(.fetchDetails) }
             .navigationTitle("Book Details")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Done") { dismiss() }
+                }
+            }
             .background(Theme.background.ignoresSafeArea())
         }
     }
@@ -39,6 +44,7 @@ private extension BookDetailsView {
         ScrollView {
             VStack(alignment: .leading, spacing: AppLayout.Spacing.large) {
                 header(details)
+                metadata(details)
                 Divider().background(Theme.accent.opacity(0.3))
                 description(details.description)
                 Spacer(minLength: AppLayout.Spacing.large)
@@ -52,35 +58,62 @@ private extension BookDetailsView {
         HStack(alignment: .top, spacing: AppLayout.Spacing.medium) {
             coverImage(details.core.thumbnailURL)
             VStack(alignment: .leading, spacing: AppLayout.Spacing.medium) {
-                titleAndSubtitle(title: details.core.title, subtitle: details.core.subtitle)
-                favoriteButton.padding(.top, AppLayout.Spacing.tiny)
+                Text(details.core.title)
+                    .font(.headline)
+                    .foregroundColor(Theme.textPrimary)
+                    .lineLimit(3)
+                    .multilineTextAlignment(.leading)
+                favoriteButton
+                    .padding(.top, AppLayout.Spacing.tiny)
+            }
+        }
+    }
+
+    @ViewBuilder
+    func metadata(_ details: Details) -> some View {
+        let hasMetadata = !details.authors.isEmpty || details.publisher != nil || details.publishedDate != nil
+        if hasMetadata {
+            VStack(alignment: .leading, spacing: AppLayout.Spacing.small) {
+                if !details.authors.isEmpty {
+                    Label(details.authors.joined(separator: ", "), systemImage: "person")
+                        .font(.subheadline)
+                        .foregroundColor(Theme.textSecondary)
+                }
+                if let publisher = details.publisher {
+                    Label(publisher, systemImage: "building.2")
+                        .font(.subheadline)
+                        .foregroundColor(Theme.textSecondary)
+                }
+                if let date = details.publishedDate {
+                    Label(date, systemImage: "calendar")
+                        .font(.subheadline)
+                        .foregroundColor(Theme.textSecondary)
+                }
             }
         }
     }
 
     @ViewBuilder
     var favoriteButton: some View {
-        WithPerceptionTracking {
-            Button(action: {
-                store.send(.toggleFavoriteTapped)
-            }) {
-                Label(
-                    store.isFavorite ? "Remove from shelf" : "Add to shelf",
-                    systemImage: store.isFavorite ? "heart.fill" : "heart"
-                )
-                .labelStyle(.titleAndIcon)
-                .lineLimit(1)
-                .padding(.horizontal)
-                .padding(.vertical, AppLayout.Spacing.small)
-                .background(
-                    Capsule()
-                        .fill(store.isFavorite ? Theme.backgroundDestructive : Theme.backgroundAccent)
-                )
-                .foregroundColor(store.isFavorite ? Theme.textDestructive : Theme.accent)
-            }
-            .buttonStyle(.plain)
-            .disabled(store.isUpdatingFavorite)
+        Button(action: {
+            store.send(.toggleFavoriteTapped)
+        }) {
+            Label(
+                store.isFavorite ? "Remove from shelf" : "Add to shelf",
+                systemImage: store.isFavorite ? "heart.fill" : "heart"
+            )
+            .labelStyle(.titleAndIcon)
+            .lineLimit(1)
+            .padding(.horizontal)
+            .padding(.vertical, AppLayout.Spacing.small)
+            .background(
+                Capsule()
+                    .fill(store.isFavorite ? Theme.backgroundDestructive : Theme.backgroundAccent)
+            )
+            .foregroundColor(store.isFavorite ? Theme.textDestructive : Theme.accent)
         }
+        .buttonStyle(.plain)
+        .disabled(store.isUpdatingFavorite)
     }
 
     @ViewBuilder
@@ -108,26 +141,6 @@ private extension BookDetailsView {
             placeholderImage
                 .frame(width: AppLayout.ImageSize.coverMediumWidth, height: AppLayout.ImageSize.coverMediumHeight)
         }
-    }
-
-    @ViewBuilder
-    func titleAndSubtitle(title: String, subtitle: String?) -> some View {
-        VStack(alignment: .leading, spacing: AppLayout.Spacing.small) {
-            Text(title)
-                .font(.headline)
-                .foregroundColor(Theme.textPrimary)
-                .lineLimit(2)
-                .multilineTextAlignment(.leading)
-
-            if let subtitle, !subtitle.isEmpty {
-                Text(subtitle)
-                    .font(.subheadline)
-                    .foregroundColor(Theme.textSecondary)
-                    .lineLimit(2)
-                    .multilineTextAlignment(.leading)
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     @ViewBuilder
@@ -159,11 +172,9 @@ private extension BookDetailsView {
 
 // Previews use the clients' preview values: fixture books and an in-memory shelf.
 #Preview {
-    NavigationStack {
-        BookDetailsView(
-            store: Store(initialState: BookDetails.State(bookId: "1")) {
-                BookDetails()
-            }
-        )
-    }
+    BookDetailsView(
+        store: Store(initialState: BookDetails.State(bookId: "1")) {
+            BookDetails()
+        }
+    )
 }
