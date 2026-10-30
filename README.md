@@ -4,7 +4,7 @@ A personal iOS app to browse and save books from the Google Books API. I built t
 
 ## Demo
 
-> *Video coming. Will show: search, browsing, adding to shelf, details sheet.*
+<img src="docs/demo.gif" width="320" alt="BookApp demo">
 
 ## What it does
 
