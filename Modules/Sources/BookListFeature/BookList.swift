@@ -205,7 +205,10 @@ public struct BookList {
 
                 // MARK: - Favorites
             case .loadFavorites:
-                state.favoriteBooks = .loading
+                // Keep the shelf visible while refreshing so it doesn't flicker.
+                if case .loaded = state.favoriteBooks {} else {
+                    state.favoriteBooks = .loading
+                }
                 return .run { [favoritesClient] send in
                     do {
                         let favorites = try await favoritesClient.favorites()
