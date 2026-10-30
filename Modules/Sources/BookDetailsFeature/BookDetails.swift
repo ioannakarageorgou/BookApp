@@ -16,17 +16,20 @@ public struct BookDetails {
         public var isFavorite: Bool
         /// True while an add/remove is being saved; further taps are ignored until it finishes.
         public var isUpdatingFavorite: Bool
+        @Presents public var alert: AlertState<Action.Alert>?
 
         package init(
             bookId: String,
             bookDetails: Loading<Details> = .idle,
             isFavorite: Bool = false,
-            isUpdatingFavorite: Bool = false
+            isUpdatingFavorite: Bool = false,
+            alert: AlertState<Action.Alert>? = nil
         ) {
             self.bookId = bookId
             self.bookDetails = bookDetails
             self.isFavorite = isFavorite
             self.isUpdatingFavorite = isUpdatingFavorite
+            self.alert = alert
         }
     }
 
@@ -36,8 +39,13 @@ public struct BookDetails {
         case favoriteStatusLoaded(Bool)
         case toggleFavoriteTapped
         /// The saved favorite state, or the error that prevented saving it.
+        case alert(PresentationAction<Alert>)
         case toggleFavoriteResponse(Result<Bool, Error>)
         case delegate(Delegate)
+
+        public enum Alert: Equatable {
+            case dismissed
+        }
 
         /// Announcements for the parent feature; BookDetails never handles these itself.
         @CasePathable
@@ -103,12 +111,25 @@ public struct BookDetails {
 
             case let .toggleFavoriteResponse(.failure(error)):
                 state.isUpdatingFavorite = false
+                state.alert = AlertState {
+                    TextState("Could not update shelf")
+                } actions: {
+                    ButtonState(role: .cancel, action: .dismissed) {
+                        TextState("OK")
+                    }
+                } message: {
+                    TextState("Please try again.")
+                }
                 logger.error("Failed to toggle favorite: \(error)")
+                return .none
+
+            case .alert:
                 return .none
 
             case .delegate:
                 return .none
             }
         }
+        .ifLet(\.$alert, action: \.alert)
     }
 }

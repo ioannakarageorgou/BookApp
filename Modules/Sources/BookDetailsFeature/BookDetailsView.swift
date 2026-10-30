@@ -5,7 +5,7 @@ import SwiftUI
 
 package struct BookDetailsView: View {
     @Environment(\.dismiss) var dismiss
-    let store: StoreOf<BookDetails>
+    @Bindable var store: StoreOf<BookDetails>
 
     package init(store: StoreOf<BookDetails>) {
         self.store = store
@@ -33,6 +33,7 @@ package struct BookDetailsView: View {
                     Button("Done") { dismiss() }
                 }
             }
+            .alert($store.scope(state: \.alert, action: \.alert))
             .background(Theme.background.ignoresSafeArea())
         }
     }
