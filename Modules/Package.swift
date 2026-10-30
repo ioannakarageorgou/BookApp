@@ -2,16 +2,7 @@
 
 import PackageDescription
 
-/// App-specific modules. Each module is its own target with explicit dependencies;
-/// reusable infrastructure (NetworkClient) lives in its own package.
-/// See docs/adr/0001-modularization.md.
-///
-/// Clients are split into an interface (`BooksClient`) and a live implementation
-/// (`BooksClientLive`), so features depend only on interfaces and never compile Realm or
-/// networking code.
-///
-/// Access levels: `public` is API the app uses (and only those modules are products),
-/// `package` is shared between modules in this package, `internal` stays in one module.
+// See docs/modularization.md for the reasoning behind this structure.
 let package = Package(
     name: "Modules",
     platforms: [.iOS(.v26)],

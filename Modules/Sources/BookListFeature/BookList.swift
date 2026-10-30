@@ -122,10 +122,8 @@ public struct BookList {
                     state.isLoadingNextPage = true
                 }
 
-                // Pages are zero-based, so the next page to request is the number already loaded.
                 let page = reset ? 0 : state.pagesLoaded
 
-                // Determine query: user search takes precedence, otherwise use category
                 let query: String
                 if !state.searchQuery.trimmingCharacters(in: .whitespaces).isEmpty {
                     query = state.searchQuery.trimmingCharacters(in: .whitespaces)
@@ -187,7 +185,6 @@ public struct BookList {
 
             case let .categorySelected(category):
                 state.selectedCategory = category
-                // Clear search when switching categories
                 state.searchQuery = ""
                 return .send(.fetchBooks(reset: true))
 
